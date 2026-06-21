@@ -1,0 +1,204 @@
+{
+  "app": {
+    "name": "خزانة تعلّمي",
+    "tagline": "مكتبتك الشخصية للتعلّم"
+  },
+  "nav": {
+    "dashboard": "الرئيسية",
+    "library": "المكتبة",
+    "review": "المراجعة",
+    "settings": "الإعدادات"
+  },
+  "auth": {
+    "welcome": "مرحباً بعودتك",
+    "createTitle": "أنشئ خزانتك",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "toggleToSignUp": "ليس لديك حساب؟ أنشئ واحداً",
+    "toggleToSignIn": "لديك حساب بالفعل؟ سجّل الدخول",
+    "signOut": "تسجيل الخروج",
+    "loading": "لحظة من فضلك…",
+    "error": "حدث خطأ ما. تحقّق من بياناتك وحاول مجدداً.",
+    "checkEmail": "تم إنشاء الحساب. تحقّق من بريدك إذا لزم التأكيد، ثم سجّل الدخول."
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "appearance": "المظهر",
+    "language": "اللغة",
+    "theme": "السمة",
+    "light": "فاتح",
+    "dark": "داكن",
+    "system": "النظام",
+    "account": "الحساب",
+    "data": "البيانات",
+    "export": "تصدير نسخة احتياطية",
+    "exporting": "جارٍ التحضير…",
+    "exportHint": "نزّل جميع مصادرك وملاحظاتك وبطاقات المراجعة كملف JSON."
+  },
+  "common": {
+    "all": "الكل",
+    "none": "بدون",
+    "optional": "اختياري",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ…",
+    "cancel": "إلغاء",
+    "loading": "جارٍ التحميل…",
+    "back": "رجوع",
+    "retry": "إعادة المحاولة"
+  },
+  "library": {
+    "title": "المكتبة",
+    "add": "إضافة مصدر",
+    "search": "ابحث بالعنوان",
+    "filterFocusArea": "مجال التعلّم",
+    "filterType": "النوع",
+    "filterStatus": "الحالة",
+    "clearFilters": "مسح التصفية",
+    "countOne": "مصدر واحد",
+    "countOther": "{n} مصادر",
+    "emptyTitle": "مكتبتك فارغة",
+    "emptyBody": "أضف أول مصدر لتبدأ ببناء خزانتك.",
+    "emptyFilteredTitle": "لا نتائج",
+    "emptyFilteredBody": "لا توجد مصادر تطابق عوامل التصفية."
+  },
+  "add": {
+    "title": "إضافة مصدر",
+    "subtitle": "أدخل التفاصيل يدوياً.",
+    "fieldTitle": "العنوان",
+    "fieldType": "النوع",
+    "fieldFocusArea": "مجال التعلّم",
+    "fieldStatus": "الحالة",
+    "fieldAuthor": "المؤلف أو المنشئ",
+    "fieldUrl": "الرابط",
+    "fieldTotalUnits": "إجمالي الوحدات",
+    "fieldUnit": "الوحدة",
+    "fieldPriority": "الأولوية",
+    "selectType": "اختر نوعاً",
+    "selectOption": "اختر…",
+    "save": "حفظ المصدر",
+    "error": "تعذّر الحفظ. حاول مجدداً.",
+    "fieldPdf": "ملف PDF",
+    "pdfHint": "ملفات PDF فقط، حتى 50 ميغابايت",
+    "pdfInvalid": "الرجاء اختيار ملف PDF.",
+    "pdfTooLarge": "هذا الملف كبير جداً (الحد 50 ميغابايت).",
+    "uploadError": "فشل الرفع. حاول مجدداً.",
+    "removeFile": "إزالة"
+  },
+  "detail": {
+    "back": "العودة إلى المكتبة",
+    "details": "التفاصيل",
+    "type": "النوع",
+    "focusArea": "مجال التعلّم",
+    "author": "المؤلف أو المنشئ",
+    "source": "الرابط",
+    "openLink": "فتح الرابط",
+    "priority": "الأولوية",
+    "units": "الوحدات",
+    "added": "أُضيف",
+    "status": "الحالة",
+    "noFocusArea": "بدون مجال",
+    "notFoundTitle": "المصدر غير موجود",
+    "notFoundBody": "هذا المصدر غير موجود أو لا يخصّك.",
+    "pdf": "ملف PDF",
+    "openPdf": "فتح الملف",
+    "downloadPdf": "تنزيل"
+  },
+  "enum": {
+    "type": {
+      "book": "كتاب",
+      "video": "فيديو",
+      "course": "دورة",
+      "article": "مقال",
+      "note": "ملاحظة"
+    },
+    "status": {
+      "not_started": "لم يبدأ",
+      "in_progress": "قيد التقدّم",
+      "completed": "مكتمل",
+      "on_hold": "متوقّف مؤقتاً"
+    },
+    "unit": {
+      "pages": "صفحات",
+      "lessons": "دروس",
+      "videos": "مقاطع",
+      "minutes": "دقائق",
+      "chapters": "فصول"
+    },
+    "priority": {
+      "low": "منخفضة",
+      "normal": "عادية",
+      "high": "عالية"
+    }
+  },
+  "placeholders": {
+    "dashboardTitle": "الرئيسية",
+    "dashboardBody": "ستظهر لوحتك هنا في مرحلة لاحقة — ما تتعلّمه، وما حان وقت مراجعته، وإحصاءات سريعة.",
+    "reviewTitle": "المراجعة",
+    "reviewBody": "ستُجرى جلسات المراجعة المتباعدة هنا."
+  },
+  "progress": {
+    "title": "التقدّم",
+    "completed": "المنجز",
+    "total": "الإجمالي",
+    "of": "من",
+    "save": "حفظ التقدّم"
+  },
+  "notes": {
+    "sectionNote": "ملاحظات",
+    "sectionTakeaway": "أبرز الفوائد",
+    "sectionQuote": "اقتباسات",
+    "sectionAction": "مهام تنفيذية",
+    "addNote": "إضافة ملاحظة",
+    "addTakeaway": "إضافة فائدة",
+    "addQuote": "إضافة اقتباس",
+    "addAction": "إضافة مهمة",
+    "empty": "لا شيء هنا بعد.",
+    "location": "الصفحة أو التوقيت",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "deleteConfirm": "حذف هذا العنصر؟",
+    "placeholder": "اكتب هنا…",
+    "bold": "عريض",
+    "italic": "مائل",
+    "bullet": "قائمة",
+    "flagReview": "وسم للمراجعة",
+    "flaggedReview": "في المراجعة",
+    "markDone": "وضع كمنجز",
+    "reopen": "إعادة فتح",
+    "statusOpen": "مفتوحة",
+    "statusDone": "مكتملة",
+    "created": "أُنشئت",
+    "doneOn": "اكتملت"
+  },
+  "review": {
+    "title": "المراجعة",
+    "remembered": "تذكّرت",
+    "forgot": "نسيت",
+    "progress": "{i} من {n}",
+    "emptyTitle": "أنجزت كل شيء",
+    "emptyBody": "لا توجد بطاقات مستحقّة للمراجعة الآن."
+  },
+  "dashboard": {
+    "title": "الرئيسية",
+    "statTotal": "إجمالي المصادر",
+    "statInProgress": "قيد التقدّم",
+    "statCompleted": "مكتملة",
+    "statDue": "بطاقات مستحقّة",
+    "dueToday": "مستحقّ للمراجعة اليوم",
+    "dueCountOne": "بطاقة واحدة مستحقّة",
+    "dueCountOther": "{n} بطاقات مستحقّة",
+    "nothingDue": "لا شيء مستحقّ الآن.",
+    "startReview": "ابدأ المراجعة",
+    "continueLearning": "أكمل التعلّم",
+    "continueEmpty": "لا شيء قيد التقدّم بعد."
+  },
+  "errors": {
+    "title": "حدث خطأ ما",
+    "body": "حدث خطأ. حاول مجدداً.",
+    "retry": "إعادة المحاولة"
+  }
+}

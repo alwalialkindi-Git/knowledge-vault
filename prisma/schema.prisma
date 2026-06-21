@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------- Enums ----------
+
+enum ResourceType {
+  book
+  video
+  course
+  article
+  note
+}
+
+enum ResourceStatus {
+  not_started
+  in_progress
+  completed
+  on_hold
+}
+
+enum UnitLabel {
+  pages
+  lessons
+  videos
+  minutes
+  chapters
+}
+
+enum Priority {
+  low
+  normal
+  high
+}
+
+enum NoteType {
+  note
+  takeaway
+  quote
+  action_item
+}
+
+enum ContentSource {
+  manual
+  ai
+}
+
+enum CardStatus {
+  active
+  suspended
+}
+
+// ---------- Models ----------
+
+model FocusArea {
+  id        String     @id @default(uuid()) @db.Uuid
+  key       String     @unique
+  nameEn    String     @map("name_en")
+  nameAr    String     @map("name_ar")
+  color     String
+  sortOrder Int        @map("sort_order")
+  resources Resource[]
+
+  @@map("focus_areas")
+}
+
+model Resource {
+  id              String          @id @default(uuid()) @db.Uuid
+  userId          String          @map("user_id") @db.Uuid
+  title           String
+  type            ResourceType
+  focusAreaId     String?         @map("focus_area_id") @db.Uuid
+  focusArea       FocusArea?      @relation(fields: [focusAreaId], references: [id], onDelete: SetNull)
+  status          ResourceStatus  @default(not_started)
+  sourceUrl       String?         @map("source_url")
+  authorOrCreator String?         @map("author_or_creator")
+  totalUnits      Int?            @map("total_units")
+  completedUnits  Int             @default(0) @map("completed_units")
+  unitLabel       UnitLabel?      @map("unit_label")
+  priority        Priority        @default(normal)
+  rating          Int?
+  coverImageUrl   String?         @map("cover_image_url")
+  fileKey         String?         @map("file_key")
+  fileName        String?         @map("file_name")
+  fileSize        Int?            @map("file_size")
+  mimeType        String?         @map("mime_type")
+  aiSummary       String?         @map("ai_summary") // reserved for the post-MVP AI layer
+  createdAt       DateTime        @default(now()) @map("created_at")
+  startedAt       DateTime?       @map("started_at")
+  completedAt     DateTime?       @map("completed_at")
+  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at")
+  notes           Note[]
+
+  @@index([userId])
+  @@index([focusAreaId])
+  @@map("resources")
+}
+
+model Note {
+  id           String         @id @default(uuid()) @db.Uuid
+  userId       String         @map("user_id") @db.Uuid
+  resourceId   String         @map("resource_id") @db.Uuid
+  resource     Resource       @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  type         NoteType       @default(note)
+  content      String
+  location     String?
+  isReviewCard Boolean        @default(false) @map("is_review_card")
+  isCompleted  Boolean        @default(false) @map("is_completed")
+  completedAt  DateTime?      @map("completed_at")
+  source       ContentSource  @default(manual)
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at")
+  reviewCard   ReviewCard?
+
+  @@index([userId])
+  @@index([resourceId])
+  @@map("notes")
+}
+
+model ReviewCard {
+  id             String        @id @default(uuid()) @db.Uuid
+  userId         String        @map("user_id") @db.Uuid
+  noteId         String        @unique @map("note_id") @db.Uuid
+  note           Note          @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  intervalDays   Int           @default(1) @map("interval_days")
+  nextReviewAt   DateTime      @map("next_review_at") @db.Date
+  lastReviewedAt DateTime?     @map("last_reviewed_at")
+  reviewCount    Int           @default(0) @map("review_count")
+  status         CardStatus    @default(active)
+  source         ContentSource @default(manual)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("review_cards")
+}

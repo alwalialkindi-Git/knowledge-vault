@@ -1,0 +1,204 @@
+{
+  "app": {
+    "name": "My Learning Vault",
+    "tagline": "Your personal learning library"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "library": "Library",
+    "review": "Review",
+    "settings": "Settings"
+  },
+  "auth": {
+    "welcome": "Welcome back",
+    "createTitle": "Create your vault",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "toggleToSignUp": "Need an account? Create one",
+    "toggleToSignIn": "Already have an account? Sign in",
+    "signOut": "Sign out",
+    "loading": "Just a moment…",
+    "error": "Something went wrong. Check your details and try again.",
+    "checkEmail": "Account created. Check your email if confirmation is required, then sign in."
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "account": "Account",
+    "data": "Data",
+    "export": "Export backup",
+    "exporting": "Preparing…",
+    "exportHint": "Download all your resources, notes, and review cards as a JSON file."
+  },
+  "common": {
+    "all": "All",
+    "none": "None",
+    "optional": "optional",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "back": "Back",
+    "retry": "Retry"
+  },
+  "library": {
+    "title": "Library",
+    "add": "Add resource",
+    "search": "Search by title",
+    "filterFocusArea": "Focus area",
+    "filterType": "Type",
+    "filterStatus": "Status",
+    "clearFilters": "Clear filters",
+    "countOne": "1 resource",
+    "countOther": "{n} resources",
+    "emptyTitle": "Your library is empty",
+    "emptyBody": "Add your first resource to start building your vault.",
+    "emptyFilteredTitle": "No matches",
+    "emptyFilteredBody": "No resources match your filters yet."
+  },
+  "add": {
+    "title": "Add resource",
+    "subtitle": "Enter the details manually.",
+    "fieldTitle": "Title",
+    "fieldType": "Type",
+    "fieldFocusArea": "Focus area",
+    "fieldStatus": "Status",
+    "fieldAuthor": "Author or creator",
+    "fieldUrl": "Link (URL)",
+    "fieldTotalUnits": "Total units",
+    "fieldUnit": "Unit",
+    "fieldPriority": "Priority",
+    "selectType": "Select a type",
+    "selectOption": "Select…",
+    "save": "Save resource",
+    "error": "Could not save. Please try again.",
+    "fieldPdf": "PDF file",
+    "pdfHint": "PDF only, up to 50 MB",
+    "pdfInvalid": "Please choose a PDF file.",
+    "pdfTooLarge": "That file is too large (max 50 MB).",
+    "uploadError": "Upload failed. Please try again.",
+    "removeFile": "Remove"
+  },
+  "detail": {
+    "back": "Back to library",
+    "details": "Details",
+    "type": "Type",
+    "focusArea": "Focus area",
+    "author": "Author or creator",
+    "source": "Link",
+    "openLink": "Open link",
+    "priority": "Priority",
+    "units": "Units",
+    "added": "Added",
+    "status": "Status",
+    "noFocusArea": "No focus area",
+    "notFoundTitle": "Resource not found",
+    "notFoundBody": "This resource doesn’t exist or isn’t yours.",
+    "pdf": "PDF",
+    "openPdf": "Open PDF",
+    "downloadPdf": "Download"
+  },
+  "enum": {
+    "type": {
+      "book": "Book",
+      "video": "Video",
+      "course": "Course",
+      "article": "Article",
+      "note": "Note"
+    },
+    "status": {
+      "not_started": "Not started",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "on_hold": "On hold"
+    },
+    "unit": {
+      "pages": "Pages",
+      "lessons": "Lessons",
+      "videos": "Videos",
+      "minutes": "Minutes",
+      "chapters": "Chapters"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High"
+    }
+  },
+  "placeholders": {
+    "dashboardTitle": "Dashboard",
+    "dashboardBody": "Your dashboard lands here in a later phase — what you're learning, what's due for review, and quick stats.",
+    "reviewTitle": "Review",
+    "reviewBody": "Your spaced-repetition review sessions will run here."
+  },
+  "progress": {
+    "title": "Progress",
+    "completed": "Completed",
+    "total": "Total",
+    "of": "of",
+    "save": "Save progress"
+  },
+  "notes": {
+    "sectionNote": "Notes",
+    "sectionTakeaway": "Key takeaways",
+    "sectionQuote": "Quotes",
+    "sectionAction": "Action items",
+    "addNote": "Add note",
+    "addTakeaway": "Add takeaway",
+    "addQuote": "Add quote",
+    "addAction": "Add action item",
+    "empty": "Nothing here yet.",
+    "location": "Page or timestamp",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this item?",
+    "placeholder": "Write here…",
+    "bold": "Bold",
+    "italic": "Italic",
+    "bullet": "List",
+    "flagReview": "Flag for review",
+    "flaggedReview": "In review",
+    "markDone": "Mark done",
+    "reopen": "Reopen",
+    "statusOpen": "Open",
+    "statusDone": "Completed",
+    "created": "Created",
+    "doneOn": "Completed"
+  },
+  "review": {
+    "title": "Review",
+    "remembered": "Remembered",
+    "forgot": "Forgot",
+    "progress": "{i} of {n}",
+    "emptyTitle": "All caught up",
+    "emptyBody": "No cards are due for review right now."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "statTotal": "Total resources",
+    "statInProgress": "In progress",
+    "statCompleted": "Completed",
+    "statDue": "Due review cards",
+    "dueToday": "Due for review today",
+    "dueCountOne": "1 card is due",
+    "dueCountOther": "{n} cards are due",
+    "nothingDue": "Nothing is due right now.",
+    "startReview": "Start review",
+    "continueLearning": "Continue learning",
+    "continueEmpty": "Nothing in progress yet."
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "body": "An error occurred. Please try again.",
+    "retry": "Retry"
+  }
+}

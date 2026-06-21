@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 33% 97%;
+    --foreground: 30 10% 15%;
+    --card: 40 33% 99%;
+    --card-foreground: 30 10% 15%;
+    --popover: 40 33% 99%;
+    --popover-foreground: 30 10% 15%;
+    --primary: 162 64% 24%;
+    --primary-foreground: 40 33% 98%;
+    --secondary: 40 20% 92%;
+    --secondary-foreground: 30 10% 20%;
+    --muted: 40 20% 92%;
+    --muted-foreground: 30 8% 42%;
+    --accent: 162 40% 90%;
+    --accent-foreground: 162 64% 18%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 38 18% 86%;
+    --input: 38 18% 86%;
+    --ring: 162 64% 24%;
+    --radius: 0.65rem;
+  }
+
+  .dark {
+    --background: 30 10% 10%;
+    --foreground: 40 20% 92%;
+    --card: 30 10% 13%;
+    --card-foreground: 40 20% 92%;
+    --popover: 30 10% 13%;
+    --popover-foreground: 40 20% 92%;
+    --primary: 158 50% 48%;
+    --primary-foreground: 30 12% 10%;
+    --secondary: 30 8% 20%;
+    --secondary-foreground: 40 20% 92%;
+    --muted: 30 8% 20%;
+    --muted-foreground: 40 10% 65%;
+    --accent: 30 8% 22%;
+    --accent-foreground: 158 50% 70%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 30 8% 24%;
+    --input: 30 8% 24%;
+    --ring: 158 50% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Arabic uses the Naskh face for both UI and headings (scholarly feel). */
+  html[lang="ar"] body,
+  html[lang="ar"] .font-serif {
+    font-family: var(--font-arabic);
+  }
+}
+
+/* Basic rich-text rendering for notes */
+.note-content p {
+  margin: 0;
+}
+.note-content p + p,
+.note-content ul {
+  margin-top: 0.5rem;
+}
+.note-content ul {
+  list-style: disc;
+  padding-inline-start: 1.25rem;
+}
+.note-content strong {
+  font-weight: 600;
+}
+.note-content em {
+  font-style: italic;
+}
+
+/* ---- Phase 5 polish ---- */
+@layer base {
+  ::selection {
+    background-color: hsl(var(--primary) / 0.18);
+  }
+  /* Prevent iOS zoom-on-focus by keeping form controls >= 16px on small screens */
+  @media (max-width: 640px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+}
+
+/* Respect the iOS home-indicator safe area for the bottom nav */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Subtle elevation for interactive cards */
+.card-hover {
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.card-hover:hover {
+  box-shadow: 0 1px 2px hsl(var(--foreground) / 0.06);
+}
