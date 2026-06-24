@@ -181,6 +181,8 @@ export function ItemsManager({
 
     const a = items[index];
     const b = items[targetIndex];
+    console.log("[moveItem]", direction, "| a:", a.id, "order_index:", a.order_index, "| b:", b.id, "order_index:", b.order_index);
+
     const supabase = createClient();
 
     const [r1, r2] = await Promise.all([
@@ -198,8 +200,21 @@ export function ItemsManager({
         .single(),
     ]);
 
-    if (r1.data) upsert(r1.data as ResourceItem);
-    if (r2.data) upsert(r2.data as ResourceItem);
+    console.log("[moveItem] r1:", r1.data ? `ok order_index=${(r1.data as ResourceItem).order_index}` : r1.error?.message);
+    console.log("[moveItem] r2:", r2.data ? `ok order_index=${(r2.data as ResourceItem).order_index}` : r2.error?.message);
+
+    if (r1.data && r2.data) {
+      // Re-sort after swap so the rendered list reflects the new order_index values
+      setItems((prev) =>
+        prev
+          .map((item) => {
+            if (item.id === a.id) return r1.data as ResourceItem;
+            if (item.id === b.id) return r2.data as ResourceItem;
+            return item;
+          })
+          .sort((x, y) => x.order_index - y.order_index),
+      );
+    }
   }
 
   // ── derived stats ─────────────────────────────────────────────────────────
