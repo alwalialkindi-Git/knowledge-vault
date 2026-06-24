@@ -126,17 +126,19 @@ export function ItemEditor({
 
       <div className="flex gap-2">
         <Button
+          type="button"
           size="sm"
           disabled={!valid || saving}
-          onClick={() =>
+          onClick={() => {
+            console.log("[ItemEditor] Save clicked", { title, itemType, url, description, minutes, valid, saving });
             onSave({
               title: title.trim(),
               item_type: itemType,
               url: url.trim(),
               description: description.trim(),
               estimated_minutes: minutes ? parseInt(minutes, 10) : null,
-            })
-          }
+            });
+          }}
         >
           {saving ? t("common.saving") : t("common.save")}
         </Button>

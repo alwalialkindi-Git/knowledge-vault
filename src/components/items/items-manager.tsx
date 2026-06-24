@@ -60,27 +60,33 @@ export function ItemsManager({
     description: string;
     estimated_minutes: number | null;
   }) {
+    console.log("[addItem] SUBMIT CLICKED", { fields, resourceId });
     const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
+    console.log("[addItem] auth.getUser →", user ? `uid=${user.id}` : "NULL — no session");
     if (!user) return false;
+
+    const payload = {
+      user_id: user.id,
+      resource_id: resourceId,
+      title: fields.title,
+      item_type: fields.item_type,
+      url: fields.url || null,
+      description: fields.description || null,
+      estimated_minutes: fields.estimated_minutes,
+      order_index: items.length,
+    };
+    console.log("[addItem] INSERT payload →", payload);
 
     const { data, error } = await supabase
       .from("resource_items")
-      .insert({
-        user_id: user.id,
-        resource_id: resourceId,
-        title: fields.title,
-        item_type: fields.item_type,
-        url: fields.url || null,
-        description: fields.description || null,
-        estimated_minutes: fields.estimated_minutes,
-        order_index: items.length,
-      })
+      .insert(payload)
       .select("*")
       .single();
 
+    console.log("[addItem] Supabase result →", { data, error });
     if (error || !data) return false;
     upsert(data as ResourceItem);
     return true;
