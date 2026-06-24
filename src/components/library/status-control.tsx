@@ -38,12 +38,14 @@ export function StatusControl({
     }
 
     const supabase = createClient();
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("resources")
       .update(patch)
-      .eq("id", resourceId);
+      .eq("id", resourceId)
+      .select("status")
+      .single();
 
-    if (error) {
+    if (error || !data) {
       setCurrent(status);
     } else {
       router.refresh();
