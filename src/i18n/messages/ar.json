@@ -130,6 +130,12 @@
       "low": "منخفضة",
       "normal": "عادية",
       "high": "عالية"
+    },
+    "itemType": {
+      "chapter": "فصل",
+      "lesson": "درس",
+      "video": "مقطع",
+      "article": "مقال"
     }
   },
   "placeholders": {
@@ -144,6 +150,29 @@
     "total": "الإجمالي",
     "of": "من",
     "save": "حفظ التقدّم"
+  },
+  "items": {
+    "title": "العناصر",
+    "addItem": "إضافة عنصر",
+    "bulkAdd": "إضافة مجموعة",
+    "empty": "لا توجد عناصر بعد.",
+    "progress": "{done} / {total} مكتمل",
+    "min": "د",
+    "openLink": "فتح الرابط",
+    "markDone": "وضع كمكتمل",
+    "reopen": "إعادة فتح",
+    "moveUp": "تحريك لأعلى",
+    "moveDown": "تحريك لأسفل",
+    "fieldTitle": "العنوان",
+    "fieldTitlePlaceholder": "مثال: الفصل 1",
+    "fieldType": "النوع",
+    "fieldUrl": "الرابط (اختياري)",
+    "fieldMinutes": "الوقت التقديري بالدقائق (اختياري)",
+    "fieldDescription": "الوصف (اختياري)",
+    "bulkPasteLabel": "الصق العناوين — عنوان في كل سطر",
+    "bulkPlaceholder": "الفصل 1\nالفصل 2\nالفصل 3",
+    "bulkCount": "سيتم إنشاء {n} عناصر",
+    "bulkSave": "إنشاء {n} عناصر"
   },
   "notes": {
     "sectionNote": "ملاحظات",

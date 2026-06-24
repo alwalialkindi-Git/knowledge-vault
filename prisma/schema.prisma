@@ -96,10 +96,33 @@ model Resource {
   completedAt     DateTime?       @map("completed_at")
   updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at")
   notes           Note[]
+  items           ResourceItem[]
 
   @@index([userId])
   @@index([focusAreaId])
   @@map("resources")
+}
+
+model ResourceItem {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @map("user_id") @db.Uuid
+  resourceId       String    @map("resource_id") @db.Uuid
+  resource         Resource  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  title            String
+  description      String?
+  itemType         String    @map("item_type") // chapter | lesson | video | article — text for flexibility
+  url              String?
+  estimatedMinutes Int?      @map("estimated_minutes")
+  orderIndex       Int       @default(0) @map("order_index")
+  isCompleted      Boolean   @default(false) @map("is_completed")
+  completedAt      DateTime? @map("completed_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([resourceId])
+  @@index([resourceId, orderIndex])
+  @@map("resource_items")
 }
 
 model Note {

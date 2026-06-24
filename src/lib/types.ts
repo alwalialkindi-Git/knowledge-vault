@@ -101,6 +101,25 @@ export interface Note {
   updated_at: string;
 }
 
+export type ItemType = "chapter" | "lesson" | "video" | "article";
+export const ITEM_TYPES: ItemType[] = ["chapter", "lesson", "video", "article"];
+
+export interface ResourceItem {
+  id: string;
+  user_id: string;
+  resource_id: string;
+  title: string;
+  description: string | null;
+  item_type: string; // text column — chapter | lesson | video | article
+  url: string | null;
+  estimated_minutes: number | null;
+  order_index: number;
+  is_completed: boolean;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface DueCard {
   id: string;
   interval_days: number;

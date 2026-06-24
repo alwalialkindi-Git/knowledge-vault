@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ResourceDetailView } from "@/components/library/resource-detail-view";
 import { RESOURCE_BUCKET } from "@/lib/storage";
-import type { FocusArea, Note, Resource } from "@/lib/types";
+import type { FocusArea, Note, Resource, ResourceItem } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +22,7 @@ export default async function ResourceDetailPage({
   let pdfUrl: string | null = null;
   let pdfDownloadUrl: string | null = null;
   let notes: Note[] = [];
+  let items: ResourceItem[] = [];
 
   if (resource?.focus_area_id) {
     const { data } = await supabase
@@ -33,12 +34,20 @@ export default async function ResourceDetailPage({
   }
 
   if (resource) {
-    const { data } = await supabase
-      .from("notes")
-      .select("*")
-      .eq("resource_id", resource.id)
-      .order("created_at", { ascending: true });
-    notes = (data as Note[]) ?? [];
+    const [notesResult, itemsResult] = await Promise.all([
+      supabase
+        .from("notes")
+        .select("*")
+        .eq("resource_id", resource.id)
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("resource_items")
+        .select("*")
+        .eq("resource_id", resource.id)
+        .order("order_index", { ascending: true }),
+    ]);
+    notes = (notesResult.data as Note[]) ?? [];
+    items = (itemsResult.data as ResourceItem[]) ?? [];
   }
 
   if (resource?.file_key) {
@@ -64,6 +73,7 @@ export default async function ResourceDetailPage({
       pdfUrl={pdfUrl}
       pdfDownloadUrl={pdfDownloadUrl}
       notes={notes}
+      items={items}
     />
   );
 }

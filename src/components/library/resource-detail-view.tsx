@@ -13,8 +13,15 @@ import { useTranslation } from "@/components/providers/language-provider";
 import { StatusControl } from "@/components/library/status-control";
 import { ProgressControl } from "@/components/library/progress-control";
 import { NotesManager } from "@/components/notes/notes-manager";
+import { ItemsManager } from "@/components/items/items-manager";
 import { formatBytes } from "@/lib/storage";
-import { focusAreaName, type FocusArea, type Note, type Resource } from "@/lib/types";
+import {
+  focusAreaName,
+  type FocusArea,
+  type Note,
+  type Resource,
+  type ResourceItem,
+} from "@/lib/types";
 
 export function ResourceDetailView({
   resource,
@@ -22,12 +29,14 @@ export function ResourceDetailView({
   pdfUrl,
   pdfDownloadUrl,
   notes,
+  items,
 }: {
   resource: Resource | null;
   focusArea: FocusArea | null;
   pdfUrl: string | null;
   pdfDownloadUrl: string | null;
   notes: Note[];
+  items: ResourceItem[];
 }) {
   const { t, locale } = useTranslation();
 
@@ -193,6 +202,13 @@ export function ResourceDetailView({
           )}
           <Row label={t("detail.added")}>{added}</Row>
         </dl>
+      </div>
+
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium text-muted-foreground">
+          {t("items.title")}
+        </h2>
+        <ItemsManager resourceId={resource.id} initialItems={items} />
       </div>
 
       <div className="border-t border-border pt-8">

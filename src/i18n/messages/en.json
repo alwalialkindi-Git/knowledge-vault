@@ -130,6 +130,12 @@
       "low": "Low",
       "normal": "Normal",
       "high": "High"
+    },
+    "itemType": {
+      "chapter": "Chapter",
+      "lesson": "Lesson",
+      "video": "Video",
+      "article": "Article"
     }
   },
   "placeholders": {
@@ -144,6 +150,29 @@
     "total": "Total",
     "of": "of",
     "save": "Save progress"
+  },
+  "items": {
+    "title": "Items",
+    "addItem": "Add item",
+    "bulkAdd": "Bulk add",
+    "empty": "No items yet.",
+    "progress": "{done} / {total} completed",
+    "min": "min",
+    "openLink": "Open link",
+    "markDone": "Mark complete",
+    "reopen": "Mark incomplete",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "fieldTitle": "Title",
+    "fieldTitlePlaceholder": "e.g. Chapter 1",
+    "fieldType": "Type",
+    "fieldUrl": "URL (optional)",
+    "fieldMinutes": "Est. minutes (optional)",
+    "fieldDescription": "Description (optional)",
+    "bulkPasteLabel": "Paste titles — one per line",
+    "bulkPlaceholder": "Chapter 1\nChapter 2\nChapter 3",
+    "bulkCount": "{n} items will be created",
+    "bulkSave": "Create {n} items"
   },
   "notes": {
     "sectionNote": "Notes",
