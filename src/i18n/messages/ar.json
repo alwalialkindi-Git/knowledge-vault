@@ -172,7 +172,17 @@
     "bulkPasteLabel": "الصق العناوين — عنوان في كل سطر",
     "bulkPlaceholder": "الفصل 1\nالفصل 2\nالفصل 3",
     "bulkCount": "سيتم إنشاء {n} عناصر",
-    "bulkSave": "إنشاء {n} عناصر"
+    "bulkSave": "إنشاء {n} عناصر",
+    "ytButton": "استيراد من يوتيوب",
+    "ytLabel": "رابط قائمة تشغيل يوتيوب",
+    "ytPlaceholder": "https://www.youtube.com/playlist?list=...",
+    "ytImport": "استيراد الفيديوهات",
+    "ytFetching": "جارٍ الجلب…",
+    "ytError": "فشل جلب قائمة التشغيل.",
+    "ytNetworkError": "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
+    "ytSuccess": "تم استيراد {n} فيديو.",
+    "ytSuccessPartial": "تم استيراد {imported} فيديو ({skipped} موجودة مسبقاً وتم تخطيها).",
+    "ytAllDuplicates": "جميع فيديوهات هذه القائمة موجودة بالفعل — لم يُضف شيء جديد."
   },
   "notes": {
     "sectionNote": "ملاحظات",

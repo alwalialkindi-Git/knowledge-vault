@@ -172,7 +172,17 @@
     "bulkPasteLabel": "Paste titles — one per line",
     "bulkPlaceholder": "Chapter 1\nChapter 2\nChapter 3",
     "bulkCount": "{n} items will be created",
-    "bulkSave": "Create {n} items"
+    "bulkSave": "Create {n} items",
+    "ytButton": "Import from YouTube",
+    "ytLabel": "YouTube Playlist URL",
+    "ytPlaceholder": "https://www.youtube.com/playlist?list=...",
+    "ytImport": "Import videos",
+    "ytFetching": "Fetching…",
+    "ytError": "Failed to fetch playlist.",
+    "ytNetworkError": "Network error. Please try again.",
+    "ytSuccess": "Imported {n} videos.",
+    "ytSuccessPartial": "Imported {imported} videos ({skipped} already existed and were skipped).",
+    "ytAllDuplicates": "All videos in this playlist already exist — nothing new was added."
   },
   "notes": {
     "sectionNote": "Notes",

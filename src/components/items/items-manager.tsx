@@ -12,15 +12,17 @@ import {
   Pencil,
   Plus,
   Trash2,
+  Youtube,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslation } from "@/components/providers/language-provider";
 import { BulkItemEditor, ItemEditor } from "@/components/items/item-editor";
+import { YouTubeImporter, type YouTubeVideo } from "@/components/items/youtube-importer";
 import type { ResourceItem } from "@/lib/types";
 
-type AddMode = "single" | "bulk" | null;
+type AddMode = "single" | "bulk" | "youtube" | null;
 
 export function ItemsManager({
   resourceId,
@@ -35,6 +37,7 @@ export function ItemsManager({
   );
   const [addMode, setAddMode] = React.useState<AddMode>(null);
   const [saving, setSaving] = React.useState(false);
+  const [importResult, setImportResult] = React.useState<{ imported: number; skipped: number } | null>(null);
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -119,6 +122,49 @@ export function ItemsManager({
     setItems((prev) =>
       [...prev, ...sorted].sort((a, b) => a.order_index - b.order_index),
     );
+    return true;
+  }
+
+  async function importYouTubeItems(videos: YouTubeVideo[]) {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const existingUrls = new Set(items.map((i) => i.url).filter(Boolean));
+    const newVideos = videos.filter((v) => !existingUrls.has(v.url));
+
+    if (newVideos.length === 0) {
+      setImportResult({ imported: 0, skipped: videos.length });
+      return true;
+    }
+
+    const rows = newVideos.map((v, i) => ({
+      user_id: user.id,
+      resource_id: resourceId,
+      title: v.title,
+      item_type: "video",
+      url: v.url,
+      description: null,
+      estimated_minutes: null,
+      order_index: items.length + i,
+    }));
+
+    const { data, error } = await supabase
+      .from("resource_items")
+      .insert(rows)
+      .select("*");
+
+    if (error || !data) return false;
+
+    const sorted = (data as ResourceItem[]).sort(
+      (a, b) => a.order_index - b.order_index,
+    );
+    setItems((prev) =>
+      [...prev, ...sorted].sort((a, b) => a.order_index - b.order_index),
+    );
+    setImportResult({ imported: newVideos.length, skipped: videos.length - newVideos.length });
     return true;
   }
 
@@ -258,6 +304,10 @@ export function ItemsManager({
             <ListPlus className="h-4 w-4" />
             {t("items.bulkAdd")}
           </Button>
+          <Button size="sm" variant="ghost" onClick={() => { setAddMode("youtube"); setImportResult(null); }}>
+            <Youtube className="h-4 w-4" />
+            {t("items.ytButton")}
+          </Button>
         </div>
       )}
 
@@ -287,6 +337,33 @@ export function ItemsManager({
             if (ok) setAddMode(null);
           }}
         />
+      )}
+
+      {/* YouTube import form */}
+      {addMode === "youtube" && (
+        <YouTubeImporter
+          saving={saving}
+          onCancel={() => { setAddMode(null); setImportResult(null); }}
+          onImport={async (videos) => {
+            setSaving(true);
+            const ok = await importYouTubeItems(videos);
+            setSaving(false);
+            if (ok) setAddMode(null);
+          }}
+        />
+      )}
+
+      {/* YouTube import success banner */}
+      {importResult && addMode === null && (
+        <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+          {importResult.imported === 0
+            ? t("items.ytAllDuplicates")
+            : importResult.skipped > 0
+              ? t("items.ytSuccessPartial")
+                  .replace("{imported}", String(importResult.imported))
+                  .replace("{skipped}", String(importResult.skipped))
+              : t("items.ytSuccess").replace("{n}", String(importResult.imported))}
+        </div>
       )}
 
       {/* Empty state */}
