@@ -85,11 +85,11 @@ export function ItemEditor({
           {t("items.fieldUrl")}
         </label>
         <input
-          type="url"
+          type="text"
           dir="ltr"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://"
+          placeholder="https://example.com"
           className={cn(fieldClass, "h-9")}
         />
       </div>
@@ -104,7 +104,7 @@ export function ItemEditor({
             min="1"
             value={minutes}
             onChange={(e) => setMinutes(e.target.value)}
-            placeholder={t("common.optional")}
+            placeholder="—"
             className={cn(fieldClass, "h-9")}
           />
         </div>
@@ -118,7 +118,7 @@ export function ItemEditor({
             dir="auto"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder={t("common.optional")}
+            placeholder="—"
             className={cn(fieldClass, "h-9")}
           />
         </div>
