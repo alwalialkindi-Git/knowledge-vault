@@ -41,10 +41,11 @@ export function ResourceDetailView({
 }) {
   const { t, locale } = useTranslation();
 
-  const [itemStats, setItemStats] = React.useState(() => ({
-    done: items.filter((i) => i.is_completed).length,
-    total: items.length,
-  }));
+  const [liveItems, setLiveItems] = React.useState<ResourceItem[]>(
+    [...items].sort((a, b) => a.order_index - b.order_index),
+  );
+  const itemsDone = liveItems.filter((i) => i.is_completed).length;
+  const itemsTotal = liveItems.length;
 
   if (!resource) {
     return (
@@ -73,9 +74,11 @@ export function ResourceDetailView({
     new Date(resource.created_at),
   );
 
+  // When items exist, use live item count as the source of truth for display.
+  const displayTotal = itemsTotal > 0 ? itemsTotal : resource.total_units;
   const unitText =
-    resource.total_units != null
-      ? `${resource.total_units}${
+    displayTotal != null
+      ? `${displayTotal}${
           resource.unit_label ? " " + t(`enum.unit.${resource.unit_label}`) : ""
         }`
       : null;
@@ -125,8 +128,8 @@ export function ResourceDetailView({
           completedUnits={resource.completed_units}
           totalUnits={resource.total_units}
           unitLabel={resource.unit_label}
-          liveCompleted={itemStats.done}
-          liveTotal={itemStats.total}
+          liveCompleted={itemsDone}
+          liveTotal={itemsTotal}
         />
       </div>
 
@@ -219,7 +222,8 @@ export function ResourceDetailView({
         <ItemsManager
           resourceId={resource.id}
           initialItems={items}
-          onItemChange={(done, total) => setItemStats({ done, total })}
+          onItemChange={() => {}}
+          onItemsChange={setLiveItems}
         />
       </div>
 

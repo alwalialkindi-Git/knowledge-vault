@@ -28,10 +28,12 @@ export function ItemsManager({
   resourceId,
   initialItems,
   onItemChange,
+  onItemsChange,
 }: {
   resourceId: string;
   initialItems: ResourceItem[];
   onItemChange?: (done: number, total: number) => void;
+  onItemsChange?: (items: ResourceItem[]) => void;
 }) {
   const { t } = useTranslation();
   const [items, setItems] = React.useState<ResourceItem[]>(
@@ -40,6 +42,7 @@ export function ItemsManager({
 
   React.useEffect(() => {
     onItemChange?.(items.filter((i) => i.is_completed).length, items.length);
+    onItemsChange?.(items);
   }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
   const [addMode, setAddMode] = React.useState<AddMode>(null);
   const [saving, setSaving] = React.useState(false);
