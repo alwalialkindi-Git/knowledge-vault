@@ -282,17 +282,14 @@ export function ItemsManager({
 
   return (
     <div className="space-y-4">
-      {/* Progress bar */}
+      {/* Progress bar — percentage omitted here; the circular widget above shows it */}
       {total > 0 && (
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">
-              {t("items.progress")
-                .replace("{done}", String(done))
-                .replace("{total}", String(total))}
-            </span>
-            <span className="font-medium tabular-nums">{pct}%</span>
-          </div>
+          <span className="text-sm text-muted-foreground">
+            {t("items.progress")
+              .replace("{done}", String(done))
+              .replace("{total}", String(total))}
+          </span>
           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
               className="h-full rounded-full bg-primary transition-all duration-300"
