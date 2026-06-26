@@ -2,6 +2,8 @@
 
 import { useTheme } from "next-themes";
 import * as React from "react";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/providers/language-provider";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -72,6 +74,26 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium text-muted-foreground">
+          {t("settings.domains")}
+        </h2>
+        <div className="rounded-lg border border-border bg-card">
+          <Link
+            href="/settings/domains"
+            className="flex items-center justify-between px-4 py-3 text-sm hover:bg-accent rounded-lg transition-colors"
+          >
+            <div>
+              <p className="font-medium">{t("settings.domains")}</p>
+              <p className="text-muted-foreground text-xs mt-0.5">
+                {t("settings.domainsHint")}
+              </p>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
         </div>
       </div>
 

@@ -19,8 +19,7 @@ import { NotesManager } from "@/components/notes/notes-manager";
 import { ItemsManager } from "@/components/items/items-manager";
 import { formatBytes } from "@/lib/storage";
 import {
-  focusAreaName,
-  type FocusArea,
+  type LearningDomain,
   type Note,
   type Resource,
   type ResourceItem,
@@ -28,20 +27,20 @@ import {
 
 export function ResourceDetailView({
   resource,
-  focusArea,
+  domain,
   pdfUrl,
   pdfDownloadUrl,
   notes,
   items,
 }: {
   resource: Resource | null;
-  focusArea: FocusArea | null;
+  domain: LearningDomain | null;
   pdfUrl: string | null;
   pdfDownloadUrl: string | null;
   notes: Note[];
   items: ResourceItem[];
 }) {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
 
   const [liveItems, setLiveItems] = React.useState<ResourceItem[]>(
     [...items].sort((a, b) => a.order_index - b.order_index),
@@ -72,7 +71,7 @@ export function ResourceDetailView({
     );
   }
 
-  const added = new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(
+  const added = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
     new Date(resource.created_at),
   );
 
@@ -114,13 +113,17 @@ export function ResourceDetailView({
           <span className="rounded-md bg-muted px-2 py-0.5">
             {t(`enum.type.${resource.type}`)}
           </span>
-          {focusArea && (
+          {domain && (
             <span className="inline-flex items-center gap-1.5">
-              <span
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: focusArea.color }}
-              />
-              {focusAreaName(focusArea, locale)}
+              {domain.icon ? (
+                <span>{domain.icon}</span>
+              ) : domain.color ? (
+                <span
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: domain.color }}
+                />
+              ) : null}
+              {domain.name}
             </span>
           )}
         </div>
@@ -217,8 +220,8 @@ export function ResourceDetailView({
           {t("detail.details")}
         </h2>
         <dl className="divide-y divide-border rounded-lg border border-border bg-card">
-          <Row label={t("detail.focusArea")}>
-            {focusArea ? focusAreaName(focusArea, locale) : t("detail.noFocusArea")}
+          <Row label={t("detail.domain")}>
+            {domain ? domain.name : t("detail.noDomain")}
           </Row>
           <Row label={t("detail.priority")}>
             {t(`enum.priority.${resource.priority}`)}

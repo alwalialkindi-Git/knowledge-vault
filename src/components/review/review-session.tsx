@@ -12,7 +12,7 @@ import { addDays, isoDate, nextInterval } from "@/lib/review";
 import type { DueCard } from "@/lib/types";
 
 export function ReviewSession({ cards }: { cards: DueCard[] }) {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const [index, setIndex] = React.useState(0);
   const [busy, setBusy] = React.useState(false);
 
@@ -60,12 +60,8 @@ export function ReviewSession({ cards }: { cards: DueCard[] }) {
 
   const card = cards[index];
   const resource = card.note?.resource;
-  const focus = resource?.focus_area;
-  const focusName = focus
-    ? locale === "ar"
-      ? focus.name_ar
-      : focus.name_en
-    : null;
+  const domain = resource?.learning_domain;
+  const domainName = domain?.name ?? null;
 
   const progress = t("review.progress")
     .replace("{i}", String(index + 1))
@@ -94,13 +90,15 @@ export function ReviewSession({ cards }: { cards: DueCard[] }) {
               {resource.title}
             </span>
           )}
-          {focusName && (
+          {domainName && (
             <span className="inline-flex items-center gap-1.5">
-              <span
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: focus!.color }}
-              />
-              {focusName}
+              {domain?.color && (
+                <span
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: domain.color }}
+                />
+              )}
+              {domainName}
             </span>
           )}
         </div>

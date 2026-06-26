@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ResourceDetailView } from "@/components/library/resource-detail-view";
 import { RESOURCE_BUCKET } from "@/lib/storage";
-import type { FocusArea, Note, Resource, ResourceItem } from "@/lib/types";
+import type { LearningDomain, Note, Resource, ResourceItem } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -18,19 +18,19 @@ export default async function ResourceDetailPage({
     .eq("id", params.id)
     .maybeSingle();
 
-  let focusArea: FocusArea | null = null;
+  let domain: LearningDomain | null = null;
   let pdfUrl: string | null = null;
   let pdfDownloadUrl: string | null = null;
   let notes: Note[] = [];
   let items: ResourceItem[] = [];
 
-  if (resource?.focus_area_id) {
+  if (resource?.learning_domain_id) {
     const { data } = await supabase
-      .from("focus_areas")
+      .from("learning_domains")
       .select("*")
-      .eq("id", resource.focus_area_id)
+      .eq("id", resource.learning_domain_id)
       .maybeSingle();
-    focusArea = (data as FocusArea) ?? null;
+    domain = (data as LearningDomain) ?? null;
   }
 
   if (resource) {
@@ -69,7 +69,7 @@ export default async function ResourceDetailPage({
   return (
     <ResourceDetailView
       resource={(resource as Resource) ?? null}
-      focusArea={focusArea}
+      domain={domain}
       pdfUrl={pdfUrl}
       pdfDownloadUrl={pdfDownloadUrl}
       notes={notes}

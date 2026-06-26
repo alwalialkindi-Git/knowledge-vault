@@ -17,7 +17,7 @@ export default async function ReviewPage() {
          id, content, location, type,
          resource:resources!inner (
            id, title,
-           focus_area:focus_areas ( name_en, name_ar, color )
+           learning_domain:learning_domains ( name, color )
          )
        )`,
     )

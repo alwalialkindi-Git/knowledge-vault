@@ -10,8 +10,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import {
   RESOURCE_STATUSES,
   RESOURCE_TYPES,
-  focusAreaName,
-  type FocusArea,
+  type LearningDomain,
   type Resource,
 } from "@/lib/types";
 
@@ -20,38 +19,38 @@ const selectClass =
 
 export function LibraryView({
   resources,
-  focusAreas,
+  domains,
 }: {
   resources: Resource[];
-  focusAreas: FocusArea[];
+  domains: LearningDomain[];
 }) {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const [q, setQ] = React.useState("");
-  const [focusArea, setFocusArea] = React.useState("");
+  const [domainFilter, setDomainFilter] = React.useState("");
   const [type, setType] = React.useState("");
   const [status, setStatus] = React.useState("");
 
-  const areaById = React.useMemo(
-    () => new Map(focusAreas.map((a) => [a.id, a])),
-    [focusAreas],
+  const domainById = React.useMemo(
+    () => new Map(domains.map((d) => [d.id, d])),
+    [domains],
   );
 
-  const hasFilters = q !== "" || focusArea !== "" || type !== "" || status !== "";
+  const hasFilters = q !== "" || domainFilter !== "" || type !== "" || status !== "";
 
   const filtered = React.useMemo(() => {
     const needle = q.trim().toLowerCase();
     return resources.filter((r) => {
-      if (focusArea && r.focus_area_id !== focusArea) return false;
+      if (domainFilter && r.learning_domain_id !== domainFilter) return false;
       if (type && r.type !== type) return false;
       if (status && r.status !== status) return false;
       if (needle && !r.title.toLowerCase().includes(needle)) return false;
       return true;
     });
-  }, [resources, q, focusArea, type, status]);
+  }, [resources, q, domainFilter, type, status]);
 
   function clearFilters() {
     setQ("");
-    setFocusArea("");
+    setDomainFilter("");
     setType("");
     setStatus("");
   }
@@ -94,19 +93,21 @@ export function LibraryView({
             />
           </div>
 
-          <select
-            aria-label={t("library.filterFocusArea")}
-            value={focusArea}
-            onChange={(e) => setFocusArea(e.target.value)}
-            className={selectClass}
-          >
-            <option value="">{t("library.filterFocusArea")}</option>
-            {focusAreas.map((a) => (
-              <option key={a.id} value={a.id}>
-                {focusAreaName(a, locale)}
-              </option>
-            ))}
-          </select>
+          {domains.length > 0 && (
+            <select
+              aria-label={t("library.filterDomain")}
+              value={domainFilter}
+              onChange={(e) => setDomainFilter(e.target.value)}
+              className={selectClass}
+            >
+              <option value="">{t("library.filterDomain")}</option>
+              {domains.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.icon ? `${d.icon} ${d.name}` : d.name}
+                </option>
+              ))}
+            </select>
+          )}
 
           <select
             aria-label={t("library.filterType")}
@@ -176,9 +177,7 @@ export function LibraryView({
             <ResourceCard
               key={r.id}
               resource={r}
-              focusArea={
-                r.focus_area_id ? areaById.get(r.focus_area_id) : undefined
-              }
+              domain={r.learning_domain_id ? domainById.get(r.learning_domain_id) : undefined}
             />
           ))}
         </div>

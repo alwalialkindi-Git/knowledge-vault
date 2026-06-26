@@ -17,8 +17,7 @@ import {
   RESOURCE_STATUSES,
   RESOURCE_TYPES,
   UNIT_LABELS,
-  focusAreaName,
-  type FocusArea,
+  type LearningDomain,
   type Priority,
   type ResourceStatus,
   type ResourceType,
@@ -28,13 +27,13 @@ import {
 const fieldClass =
   "h-10 w-full rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
-export function AddResourceForm({ focusAreas }: { focusAreas: FocusArea[] }) {
+export function AddResourceForm({ domains }: { domains: LearningDomain[] }) {
   const router = useRouter();
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
 
   const [title, setTitle] = React.useState("");
   const [type, setType] = React.useState<ResourceType | "">("");
-  const [focusAreaId, setFocusAreaId] = React.useState("");
+  const [domainId, setDomainId] = React.useState("");
   const [status, setStatus] = React.useState<ResourceStatus>("not_started");
   const [author, setAuthor] = React.useState("");
   const [url, setUrl] = React.useState("");
@@ -113,7 +112,7 @@ export function AddResourceForm({ focusAreas }: { focusAreas: FocusArea[] }) {
         user_id: user.id,
         title: title.trim(),
         type,
-        focus_area_id: focusAreaId || null,
+        learning_domain_id: domainId || null,
         status,
         author_or_creator: author.trim() || null,
         source_url: url.trim() || null,
@@ -179,16 +178,16 @@ export function AddResourceForm({ focusAreas }: { focusAreas: FocusArea[] }) {
             </select>
           </Field>
 
-          <Field label={t("add.fieldFocusArea")} hint={t("common.optional")}>
+          <Field label={t("add.fieldDomain")} hint={t("common.optional")}>
             <select
-              value={focusAreaId}
-              onChange={(e) => setFocusAreaId(e.target.value)}
+              value={domainId}
+              onChange={(e) => setDomainId(e.target.value)}
               className={fieldClass}
             >
               <option value="">{t("common.none")}</option>
-              {focusAreas.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {focusAreaName(a, locale)}
+              {domains.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.icon ? `${d.icon} ${d.name}` : d.name}
                 </option>
               ))}
             </select>

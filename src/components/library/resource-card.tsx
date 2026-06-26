@@ -4,20 +4,19 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/providers/language-provider";
 import {
-  focusAreaName,
   statusBadgeClasses,
-  type FocusArea,
+  type LearningDomain,
   type Resource,
 } from "@/lib/types";
 
 export function ResourceCard({
   resource,
-  focusArea,
+  domain,
 }: {
   resource: Resource;
-  focusArea?: FocusArea;
+  domain?: LearningDomain;
 }) {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Link
@@ -51,13 +50,17 @@ export function ResourceCard({
         <span className="rounded-md bg-muted px-2 py-0.5">
           {t(`enum.type.${resource.type}`)}
         </span>
-        {focusArea && (
+        {domain && (
           <span className="inline-flex items-center gap-1.5">
-            <span
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: focusArea.color }}
-            />
-            {focusAreaName(focusArea, locale)}
+            {domain.icon ? (
+              <span>{domain.icon}</span>
+            ) : domain.color ? (
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: domain.color }}
+              />
+            ) : null}
+            {domain.name}
           </span>
         )}
       </div>
