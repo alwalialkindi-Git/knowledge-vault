@@ -448,6 +448,7 @@ function ItemRow({
 
   return (
     <li
+      id={`item-${item.id}`}
       className={cn(
         "rounded-lg border border-border bg-card p-3",
         item.is_completed && "opacity-70",

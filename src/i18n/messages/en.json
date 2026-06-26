@@ -182,7 +182,10 @@
     "ytNetworkError": "Network error. Please try again.",
     "ytSuccess": "Imported {n} videos.",
     "ytSuccessPartial": "Imported {imported} videos ({skipped} already existed and were skipped).",
-    "ytAllDuplicates": "All videos in this playlist already exist — nothing new was added."
+    "ytAllDuplicates": "All videos in this playlist already exist — nothing new was added.",
+    "continueLearning": "Continue Learning",
+    "courseCompleted": "Course Completed",
+    "watchYouTube": "Watch on YouTube"
   },
   "notes": {
     "sectionNote": "Notes",

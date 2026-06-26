@@ -4,10 +4,12 @@ import * as React from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
+  CheckCircle2,
   Download,
   ExternalLink,
   FileQuestion,
   FileText,
+  Play,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/components/providers/language-provider";
@@ -74,6 +76,20 @@ export function ResourceDetailView({
     new Date(resource.created_at),
   );
 
+  const nextItem = liveItems.find((i) => !i.is_completed) ?? null;
+  const allItemsDone = itemsTotal > 0 && itemsDone === itemsTotal;
+
+  function handleContinue() {
+    if (!nextItem) return;
+    if (nextItem.url) {
+      window.open(nextItem.url, "_blank", "noreferrer");
+    } else {
+      document
+        .getElementById(`item-${nextItem.id}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
   // When items exist, use live item count as the source of truth for display.
   const displayTotal = itemsTotal > 0 ? itemsTotal : resource.total_units;
   const unitText =
@@ -131,6 +147,19 @@ export function ResourceDetailView({
           liveCompleted={itemsDone}
           liveTotal={itemsTotal}
         />
+        {itemsTotal > 0 && (
+          allItemsDone ? (
+            <Button variant="outline" size="sm" disabled className="gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              {t("items.courseCompleted")}
+            </Button>
+          ) : (
+            <Button size="sm" onClick={handleContinue} className="gap-2">
+              <Play className="h-4 w-4" />
+              {t("items.continueLearning")}
+            </Button>
+          )
+        )}
       </div>
 
       <div className="space-y-3">

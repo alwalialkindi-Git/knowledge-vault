@@ -182,7 +182,10 @@
     "ytNetworkError": "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
     "ytSuccess": "تم استيراد {n} فيديو.",
     "ytSuccessPartial": "تم استيراد {imported} فيديو ({skipped} موجودة مسبقاً وتم تخطيها).",
-    "ytAllDuplicates": "جميع فيديوهات هذه القائمة موجودة بالفعل — لم يُضف شيء جديد."
+    "ytAllDuplicates": "جميع فيديوهات هذه القائمة موجودة بالفعل — لم يُضف شيء جديد.",
+    "continueLearning": "متابعة التعلم",
+    "courseCompleted": "تم إكمال الكورس",
+    "watchYouTube": "مشاهدة على يوتيوب"
   },
   "notes": {
     "sectionNote": "ملاحظات",
