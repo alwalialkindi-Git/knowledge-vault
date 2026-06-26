@@ -1,5 +1,3 @@
-import type { Locale } from "@/i18n/config";
-
 export type ResourceType = "book" | "video" | "course" | "article" | "note";
 export type ResourceStatus =
   | "not_started"
@@ -31,13 +29,16 @@ export const UNIT_LABELS: UnitLabel[] = [
 ];
 export const PRIORITIES: Priority[] = ["low", "normal", "high"];
 
-export interface FocusArea {
+export interface LearningDomain {
   id: string;
-  key: string;
-  name_en: string;
-  name_ar: string;
-  color: string;
+  user_id: string;
+  name: string;
+  icon: string | null;
+  color: string | null;
   sort_order: number;
+  is_archived: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Resource {
@@ -45,7 +46,8 @@ export interface Resource {
   user_id: string;
   title: string;
   type: ResourceType;
-  focus_area_id: string | null;
+  focus_area_id: string | null;     // legacy — kept for DB compat
+  learning_domain_id: string | null;
   status: ResourceStatus;
   source_url: string | null;
   author_or_creator: string | null;
@@ -64,10 +66,6 @@ export interface Resource {
   started_at: string | null;
   completed_at: string | null;
   updated_at: string;
-}
-
-export function focusAreaName(area: FocusArea, locale: Locale): string {
-  return locale === "ar" ? area.name_ar : area.name_en;
 }
 
 export const statusBadgeClasses: Record<ResourceStatus, string> = {
@@ -135,10 +133,9 @@ export interface DueCard {
     resource: {
       id: string;
       title: string;
-      focus_area: {
-        name_en: string;
-        name_ar: string;
-        color: string;
+      learning_domain: {
+        name: string;
+        color: string | null;
       } | null;
     } | null;
   } | null;
