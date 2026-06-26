@@ -512,7 +512,9 @@ function ItemRow({
               className="mt-1 inline-flex items-center gap-1 text-xs text-primary hover:underline"
             >
               <ExternalLink className="h-3 w-3" />
-              {t("items.openLink")}
+              {item.url.includes("youtube") || item.url.includes("youtu.be")
+                ? t("items.watchYouTube")
+                : t("items.openLink")}
             </a>
           )}
         </div>
