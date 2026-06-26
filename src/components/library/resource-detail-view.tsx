@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -39,6 +40,11 @@ export function ResourceDetailView({
   items: ResourceItem[];
 }) {
   const { t, locale } = useTranslation();
+
+  const [itemStats, setItemStats] = React.useState(() => ({
+    done: items.filter((i) => i.is_completed).length,
+    total: items.length,
+  }));
 
   if (!resource) {
     return (
@@ -119,6 +125,8 @@ export function ResourceDetailView({
           completedUnits={resource.completed_units}
           totalUnits={resource.total_units}
           unitLabel={resource.unit_label}
+          liveCompleted={itemStats.done}
+          liveTotal={itemStats.total}
         />
       </div>
 
@@ -208,7 +216,11 @@ export function ResourceDetailView({
         <h2 className="text-sm font-medium text-muted-foreground">
           {t("items.title")}
         </h2>
-        <ItemsManager resourceId={resource.id} initialItems={items} />
+        <ItemsManager
+          resourceId={resource.id}
+          initialItems={items}
+          onItemChange={(done, total) => setItemStats({ done, total })}
+        />
       </div>
 
       <div className="border-t border-border pt-8">

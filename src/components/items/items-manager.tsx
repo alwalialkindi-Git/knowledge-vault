@@ -27,14 +27,20 @@ type AddMode = "single" | "bulk" | "youtube" | null;
 export function ItemsManager({
   resourceId,
   initialItems,
+  onItemChange,
 }: {
   resourceId: string;
   initialItems: ResourceItem[];
+  onItemChange?: (done: number, total: number) => void;
 }) {
   const { t } = useTranslation();
   const [items, setItems] = React.useState<ResourceItem[]>(
     [...initialItems].sort((a, b) => a.order_index - b.order_index),
   );
+
+  React.useEffect(() => {
+    onItemChange?.(items.filter((i) => i.is_completed).length, items.length);
+  }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
   const [addMode, setAddMode] = React.useState<AddMode>(null);
   const [saving, setSaving] = React.useState(false);
   const [importResult, setImportResult] = React.useState<{ imported: number; skipped: number } | null>(null);

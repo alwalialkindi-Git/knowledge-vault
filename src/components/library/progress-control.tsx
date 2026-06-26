@@ -15,11 +15,15 @@ export function ProgressControl({
   completedUnits,
   totalUnits,
   unitLabel,
+  liveCompleted,
+  liveTotal,
 }: {
   resourceId: string;
   completedUnits: number;
   totalUnits: number | null;
   unitLabel: UnitLabel | null;
+  liveCompleted?: number;
+  liveTotal?: number;
 }) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -31,9 +35,14 @@ export function ProgressControl({
 
   const completedNum = Math.max(0, Number(completed) || 0);
   const totalNum = total === "" ? null : Math.max(0, Number(total) || 0);
+
+  // When items are present, the circle and text reflect live item completion.
+  // The manual inputs remain unchanged for the "Save Progress" workflow.
+  const displayCompleted = liveTotal != null && liveTotal > 0 ? liveCompleted! : completedNum;
+  const displayTotal = liveTotal != null && liveTotal > 0 ? liveTotal : (totalNum ?? 0);
   const pct =
-    totalNum && totalNum > 0
-      ? Math.min(100, Math.round((completedNum / totalNum) * 100))
+    displayTotal > 0
+      ? Math.min(100, Math.round((displayCompleted / displayTotal) * 100))
       : 0;
 
   const dirty =
@@ -123,7 +132,7 @@ export function ProgressControl({
 
         <div className="flex items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground tabular-nums">
-            {completedNum} {t("progress.of")} {totalNum ?? "—"} {unit}
+            {displayCompleted} {t("progress.of")} {displayTotal || "—"} {unit}
           </p>
           <Button size="sm" onClick={save} disabled={!dirty || saving}>
             {saving ? t("common.saving") : t("progress.save")}
