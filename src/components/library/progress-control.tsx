@@ -105,39 +105,47 @@ export function ProgressControl({
       </div>
 
       <div className="flex-1 space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          <label className="space-y-1.5">
-            <span className="text-sm font-medium">{t("progress.completed")}</span>
-            <input
-              type="number"
-              min={0}
-              inputMode="numeric"
-              value={completed}
-              onChange={(e) => setCompleted(e.target.value)}
-              className={fieldClass}
-            />
-          </label>
-          <label className="space-y-1.5">
-            <span className="text-sm font-medium">{t("progress.total")}</span>
-            <input
-              type="number"
-              min={0}
-              inputMode="numeric"
-              value={total}
-              onChange={(e) => setTotal(e.target.value)}
-              className={fieldClass}
-            />
-          </label>
-        </div>
-
-        <div className="flex items-center justify-between gap-3">
+        {liveTotal != null && liveTotal > 0 ? (
           <p className="text-sm text-muted-foreground tabular-nums">
-            {displayCompleted} {t("progress.of")} {displayTotal || "—"} {unit}
+            {displayCompleted} {t("progress.of")} {displayTotal} {unit}
           </p>
-          <Button size="sm" onClick={save} disabled={!dirty || saving}>
-            {saving ? t("common.saving") : t("progress.save")}
-          </Button>
-        </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="space-y-1.5">
+                <span className="text-sm font-medium">{t("progress.completed")}</span>
+                <input
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  value={completed}
+                  onChange={(e) => setCompleted(e.target.value)}
+                  className={fieldClass}
+                />
+              </label>
+              <label className="space-y-1.5">
+                <span className="text-sm font-medium">{t("progress.total")}</span>
+                <input
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  value={total}
+                  onChange={(e) => setTotal(e.target.value)}
+                  className={fieldClass}
+                />
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground tabular-nums">
+                {displayCompleted} {t("progress.of")} {displayTotal || "—"} {unit}
+              </p>
+              <Button size="sm" onClick={save} disabled={!dirty || saving}>
+                {saving ? t("common.saving") : t("progress.save")}
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
