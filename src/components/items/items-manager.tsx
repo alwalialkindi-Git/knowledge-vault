@@ -477,16 +477,17 @@ function ItemRow({
 
         {/* Content */}
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span
-              dir="auto"
-              className={cn(
-                "text-sm font-medium",
-                item.is_completed && "line-through text-muted-foreground",
-              )}
-            >
-              {item.title}
-            </span>
+          <span
+            dir="auto"
+            title={item.title}
+            className={cn(
+              "block text-sm font-medium [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden",
+              item.is_completed && "line-through text-muted-foreground",
+            )}
+          >
+            {item.title}
+          </span>
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <span className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
               {t(`enum.itemType.${item.item_type}`)}
             </span>
