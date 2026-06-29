@@ -23,17 +23,26 @@ export function DomainsManager({
   const [adding, setAdding] = React.useState(false);
   const [showArchived, setShowArchived] = React.useState(false);
 
+  const [fetchError, setFetchError] = React.useState<string | null>(null);
+
   // Server-side fetch may return empty if the auth session isn't available
   // during SSR. Re-fetch on mount using the browser session which is always live.
   React.useEffect(() => {
-    if (initialDomains.length > 0) return;
     const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user }, error: authErr }) => {
+      console.log("[DomainsManager] auth.getUser →", user?.id ?? null, authErr);
+    });
     supabase
       .from("learning_domains")
       .select("*")
       .order("sort_order")
-      .then(({ data }) => {
-        if (data && data.length > 0) {
+      .then(({ data, error }) => {
+        console.log("[DomainsManager] fetch →", { data, error });
+        if (error) {
+          setFetchError(`DB error: ${error.message} (${error.code})`);
+          return;
+        }
+        if (data) {
           setDomains([...(data as LearningDomain[])].sort((a, b) => a.sort_order - b.sort_order));
         }
       });
@@ -57,8 +66,12 @@ export function DomainsManager({
 
   async function createDomain(fields: { name: string; color: string; icon: string }) {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
+    const { data: { user }, error: authErr } = await supabase.auth.getUser();
+    console.log("[DomainsManager] createDomain auth →", user?.id ?? null, authErr);
+    if (!user) {
+      setFetchError(`Not authenticated: ${authErr?.message ?? "no user"}`);
+      return false;
+    }
 
     const active = domains.filter((d) => !d.is_archived);
     const { data, error } = await supabase
@@ -73,7 +86,12 @@ export function DomainsManager({
       .select("*")
       .single();
 
-    if (error || !data) return false;
+    console.log("[DomainsManager] insert →", { data, error });
+    if (error || !data) {
+      setFetchError(`Insert failed: ${error?.message ?? "no data"} (${error?.code ?? ""})`);
+      return false;
+    }
+    setFetchError(null);
     upsert(data as LearningDomain);
     return true;
   }
@@ -179,6 +197,11 @@ export function DomainsManager({
 
   return (
     <div className="space-y-6">
+      {fetchError && (
+        <div className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <strong>Debug error:</strong> {fetchError}
+        </div>
+      )}
       {/* Add form */}
       {adding ? (
         <DomainForm

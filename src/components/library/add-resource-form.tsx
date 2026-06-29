@@ -27,10 +27,11 @@ import {
 const fieldClass =
   "h-10 w-full rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
-export function AddResourceForm({ domains }: { domains: LearningDomain[] }) {
+export function AddResourceForm({ domains: initialDomains }: { domains: LearningDomain[] }) {
   const router = useRouter();
   const { t } = useTranslation();
 
+  const [domains, setDomains] = React.useState<LearningDomain[]>(initialDomains);
   const [title, setTitle] = React.useState("");
   const [type, setType] = React.useState<ResourceType | "">("");
   const [domainId, setDomainId] = React.useState("");
@@ -44,6 +45,20 @@ export function AddResourceForm({ domains }: { domains: LearningDomain[] }) {
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Fetch domains client-side; server props may be empty if SSR auth didn't resolve.
+  React.useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("learning_domains")
+      .select("*")
+      .eq("is_archived", false)
+      .order("sort_order")
+      .then(({ data, error: err }) => {
+        console.log("[AddResourceForm] domains fetch →", { data, error: err });
+        if (data && data.length > 0) setDomains(data as LearningDomain[]);
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     setError(null);
