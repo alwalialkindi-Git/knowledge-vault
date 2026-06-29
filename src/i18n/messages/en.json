@@ -131,7 +131,14 @@
     "notFoundBody": "This resource doesn’t exist or isn’t yours.",
     "pdf": "PDF",
     "openPdf": "Open PDF",
-    "downloadPdf": "Download"
+    "downloadPdf": "Download",
+    "pdfError": "Could not load PDF. Please reload the page.",
+    "dangerZone": "Danger zone",
+    "deleteResource": "Delete resource",
+    "deleteHint": "Permanently removes this resource, its PDF file, and all notes. This cannot be undone.",
+    "deleteConfirm": "Delete \"{title}\" and all its notes? This cannot be undone.",
+    "deleteError": "Could not delete. Please try again.",
+    "deleteSuccess": "Resource deleted."
   },
   "enum": {
     "type": {

@@ -2,7 +2,13 @@
 -- My Learning Vault — Row-Level Security (RLS)
 -- ----------------------------------------------------------------------------
 -- Makes the vault private: each signed-in user can only touch their own rows.
--- Run this AFTER the Prisma migration has created the tables.
+--
+-- Run order:
+--   1. Prisma migrations (prisma/migrations/) — creates base tables
+--   2. supabase/migrations/001_learning_domains.sql — learning_domains table + RLS
+--   3. supabase/migrations/002_resource_items.sql  — resource_items table + RLS
+--   4. supabase/policies.sql (this file)           — RLS for base tables
+--   5. supabase/storage.sql                        — storage bucket + policies
 --
 -- Where to run it:
 --   Supabase Dashboard -> SQL Editor -> New query -> paste this whole file -> Run.
@@ -12,6 +18,13 @@
 -- server-side admin work keep functioning. RLS protects access made with the
 -- Supabase client using a user's session (the anon/authenticated keys).
 -- ============================================================================
+
+-- 0. Ensure authenticated role can access all tables -----------------------
+grant usage on schema public to authenticated;
+grant all on table resources    to authenticated;
+grant all on table notes        to authenticated;
+grant all on table review_cards to authenticated;
+grant all on table focus_areas  to authenticated;
 
 -- 1. Turn on RLS for every relevant table -----------------------------------
 alter table "resources"    enable row level security;

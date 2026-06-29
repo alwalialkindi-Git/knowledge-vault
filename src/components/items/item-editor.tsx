@@ -129,16 +129,15 @@ export function ItemEditor({
           type="button"
           size="sm"
           disabled={!valid || saving}
-          onClick={() => {
-            console.log("[ItemEditor] Save clicked", { title, itemType, url, description, minutes, valid, saving });
+          onClick={() =>
             onSave({
               title: title.trim(),
               item_type: itemType,
               url: url.trim(),
               description: description.trim(),
               estimated_minutes: minutes ? parseInt(minutes, 10) : null,
-            });
-          }}
+            })
+          }
         >
           {saving ? t("common.saving") : t("common.save")}
         </Button>

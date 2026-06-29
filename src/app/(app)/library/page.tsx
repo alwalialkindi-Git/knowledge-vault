@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { LibraryView } from "@/components/library/library-view";
 import type { LearningDomain, Resource } from "@/lib/types";
@@ -20,9 +21,11 @@ export default async function LibraryPage() {
   ]);
 
   return (
-    <LibraryView
-      resources={(resourcesRes.data as Resource[]) ?? []}
-      domains={(domainsRes.data as LearningDomain[]) ?? []}
-    />
+    <Suspense>
+      <LibraryView
+        resources={(resourcesRes.data as Resource[]) ?? []}
+        domains={(domainsRes.data as LearningDomain[]) ?? []}
+      />
+    </Suspense>
   );
 }

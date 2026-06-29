@@ -58,6 +58,8 @@ enum CardStatus {
 
 // ---------- Models ----------
 
+// Legacy shared lookup table — kept for DB compatibility.
+// Active code uses learning_domains (per-user) instead.
 model FocusArea {
   id        String     @id @default(uuid()) @db.Uuid
   key       String     @unique
@@ -65,41 +67,59 @@ model FocusArea {
   nameAr    String     @map("name_ar")
   color     String
   sortOrder Int        @map("sort_order")
-  resources Resource[]
 
   @@map("focus_areas")
 }
 
+// Per-user domain tags, replacing focus_areas.
+// Created by supabase/migrations/001_learning_domains.sql
+model LearningDomain {
+  id         String     @id @default(uuid()) @db.Uuid
+  userId     String     @map("user_id") @db.Uuid
+  name       String
+  icon       String?
+  color      String?
+  sortOrder  Int        @default(0) @map("sort_order")
+  isArchived Boolean    @default(false) @map("is_archived")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @default(now()) @updatedAt @map("updated_at")
+  resources  Resource[]
+
+  @@index([userId, sortOrder])
+  @@map("learning_domains")
+}
+
 model Resource {
-  id              String          @id @default(uuid()) @db.Uuid
-  userId          String          @map("user_id") @db.Uuid
-  title           String
-  type            ResourceType
-  focusAreaId     String?         @map("focus_area_id") @db.Uuid
-  focusArea       FocusArea?      @relation(fields: [focusAreaId], references: [id], onDelete: SetNull)
-  status          ResourceStatus  @default(not_started)
-  sourceUrl       String?         @map("source_url")
-  authorOrCreator String?         @map("author_or_creator")
-  totalUnits      Int?            @map("total_units")
-  completedUnits  Int             @default(0) @map("completed_units")
-  unitLabel       UnitLabel?      @map("unit_label")
-  priority        Priority        @default(normal)
-  rating          Int?
-  coverImageUrl   String?         @map("cover_image_url")
-  fileKey         String?         @map("file_key")
-  fileName        String?         @map("file_name")
-  fileSize        Int?            @map("file_size")
-  mimeType        String?         @map("mime_type")
-  aiSummary       String?         @map("ai_summary") // reserved for the post-MVP AI layer
-  createdAt       DateTime        @default(now()) @map("created_at")
-  startedAt       DateTime?       @map("started_at")
-  completedAt     DateTime?       @map("completed_at")
-  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at")
-  notes           Note[]
-  items           ResourceItem[]
+  id                String          @id @default(uuid()) @db.Uuid
+  userId            String          @map("user_id") @db.Uuid
+  title             String
+  type              ResourceType
+  focusAreaId       String?         @map("focus_area_id") @db.Uuid  // legacy column — kept for DB compat
+  learningDomainId  String?         @map("learning_domain_id") @db.Uuid
+  learningDomain    LearningDomain? @relation(fields: [learningDomainId], references: [id], onDelete: SetNull)
+  status            ResourceStatus  @default(not_started)
+  sourceUrl         String?         @map("source_url")
+  authorOrCreator   String?         @map("author_or_creator")
+  totalUnits        Int?            @map("total_units")
+  completedUnits    Int             @default(0) @map("completed_units")
+  unitLabel         UnitLabel?      @map("unit_label")
+  priority          Priority        @default(normal)
+  rating            Int?
+  coverImageUrl     String?         @map("cover_image_url")
+  fileKey           String?         @map("file_key")
+  fileName          String?         @map("file_name")
+  fileSize          Int?            @map("file_size")
+  mimeType          String?         @map("mime_type")
+  aiSummary         String?         @map("ai_summary")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  startedAt         DateTime?       @map("started_at")
+  completedAt       DateTime?       @map("completed_at")
+  updatedAt         DateTime        @default(now()) @updatedAt @map("updated_at")
+  notes             Note[]
+  items             ResourceItem[]
 
   @@index([userId])
-  @@index([focusAreaId])
+  @@index([learningDomainId])
   @@map("resources")
 }
 

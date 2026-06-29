@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BookOpen, Plus, Search, SearchX, X } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { BookOpen, CheckCircle2, Plus, Search, SearchX, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslation } from "@/components/providers/language-provider";
@@ -26,6 +27,23 @@ export function LibraryView({
   domains: LearningDomain[];
 }) {
   const { t } = useTranslation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [showDeletedToast, setShowDeletedToast] = React.useState(
+    () => searchParams.get("deleted") === "1",
+  );
+
+  React.useEffect(() => {
+    if (showDeletedToast) {
+      // Remove the ?deleted=1 param from the URL without a page reload
+      const url = new URL(window.location.href);
+      url.searchParams.delete("deleted");
+      router.replace(url.pathname, { scroll: false });
+      const timer = setTimeout(() => setShowDeletedToast(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const [liveDomains, setLiveDomains] = React.useState<LearningDomain[]>(domains);
   const [q, setQ] = React.useState("");
   const [domainFilter, setDomainFilter] = React.useState("");
@@ -76,6 +94,21 @@ export function LibraryView({
 
   return (
     <section className="mx-auto max-w-5xl space-y-6">
+      {showDeletedToast && (
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          <span>{t("detail.deleteSuccess")}</span>
+          <button
+            type="button"
+            onClick={() => setShowDeletedToast(false)}
+            className="ms-auto opacity-60 hover:opacity-100"
+            aria-label={t("common.cancel")}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-serif text-3xl font-medium">

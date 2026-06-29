@@ -27,7 +27,11 @@ CREATE TABLE IF NOT EXISTS learning_domains (
 CREATE INDEX IF NOT EXISTS idx_learning_domains_user_sort
   ON learning_domains (user_id, sort_order);
 
--- 2. RLS — each user owns their own domains ------------------------------------
+-- 2. Grant table access to authenticated role ---------------------------------
+
+GRANT ALL ON TABLE learning_domains TO authenticated;
+
+-- 3. RLS — each user owns their own domains ------------------------------------
 
 ALTER TABLE learning_domains ENABLE ROW LEVEL SECURITY;
 

@@ -72,33 +72,26 @@ export function ItemsManager({
     description: string;
     estimated_minutes: number | null;
   }) {
-    console.log("[addItem] SUBMIT CLICKED", { fields, resourceId });
     const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    console.log("[addItem] auth.getUser →", user ? `uid=${user.id}` : "NULL — no session");
     if (!user) return false;
-
-    const payload = {
-      user_id: user.id,
-      resource_id: resourceId,
-      title: fields.title,
-      item_type: fields.item_type,
-      url: fields.url || null,
-      description: fields.description || null,
-      estimated_minutes: fields.estimated_minutes,
-      order_index: items.length,
-    };
-    console.log("[addItem] INSERT payload →", payload);
 
     const { data, error } = await supabase
       .from("resource_items")
-      .insert(payload)
+      .insert({
+        user_id: user.id,
+        resource_id: resourceId,
+        title: fields.title,
+        item_type: fields.item_type,
+        url: fields.url || null,
+        description: fields.description || null,
+        estimated_minutes: fields.estimated_minutes,
+        order_index: items.length,
+      })
       .select("*")
       .single();
-
-    console.log("[addItem] Supabase result →", { data, error });
     if (error || !data) return false;
     upsert(data as ResourceItem);
     return true;
@@ -236,8 +229,6 @@ export function ItemsManager({
 
     const a = items[index];
     const b = items[targetIndex];
-    console.log("[moveItem]", direction, "| a:", a.id, "order_index:", a.order_index, "| b:", b.id, "order_index:", b.order_index);
-
     const supabase = createClient();
 
     const [r1, r2] = await Promise.all([
@@ -254,9 +245,6 @@ export function ItemsManager({
         .select("*")
         .single(),
     ]);
-
-    console.log("[moveItem] r1:", r1.data ? `ok order_index=${(r1.data as ResourceItem).order_index}` : r1.error?.message);
-    console.log("[moveItem] r2:", r2.data ? `ok order_index=${(r2.data as ResourceItem).order_index}` : r2.error?.message);
 
     if (r1.data && r2.data) {
       // Re-sort after swap so the rendered list reflects the new order_index values

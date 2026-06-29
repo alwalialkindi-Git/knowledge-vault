@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -10,14 +11,16 @@ import {
   FileQuestion,
   FileText,
   Play,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 import { useTranslation } from "@/components/providers/language-provider";
 import { StatusControl } from "@/components/library/status-control";
 import { ProgressControl } from "@/components/library/progress-control";
 import { NotesManager } from "@/components/notes/notes-manager";
 import { ItemsManager } from "@/components/items/items-manager";
-import { formatBytes } from "@/lib/storage";
+import { RESOURCE_BUCKET, formatBytes } from "@/lib/storage";
 import {
   type LearningDomain,
   type Note,
@@ -41,12 +44,39 @@ export function ResourceDetailView({
   items: ResourceItem[];
 }) {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [liveItems, setLiveItems] = React.useState<ResourceItem[]>(
     [...items].sort((a, b) => a.order_index - b.order_index),
   );
   const itemsDone = liveItems.filter((i) => i.is_completed).length;
   const itemsTotal = liveItems.length;
+
+  const [deleting, setDeleting] = React.useState(false);
+  const [deleteError, setDeleteError] = React.useState<string | null>(null);
+
+  async function handleDelete() {
+    if (!resource) return;
+    const msg = t("detail.deleteConfirm").replace("{title}", resource.title);
+    if (!window.confirm(msg)) return;
+    setDeleting(true);
+    setDeleteError(null);
+    const supabase = createClient();
+    if (resource.file_key) {
+      await supabase.storage.from(RESOURCE_BUCKET).remove([resource.file_key]);
+    }
+    const { error } = await supabase
+      .from("resources")
+      .delete()
+      .eq("id", resource.id);
+    if (error) {
+      setDeleteError(t("detail.deleteError"));
+      setDeleting(false);
+      return;
+    }
+    router.push("/library?deleted=1");
+    router.refresh();
+  }
 
   if (!resource) {
     return (
@@ -210,6 +240,9 @@ export function ResourceDetailView({
                   </a>
                 </Button>
               )}
+              {!pdfUrl && !pdfDownloadUrl && (
+                <p className="text-xs text-destructive">{t("detail.pdfError")}</p>
+              )}
             </div>
           </div>
         </div>
@@ -254,13 +287,38 @@ export function ResourceDetailView({
         <ItemsManager
           resourceId={resource.id}
           initialItems={items}
-          onItemChange={() => {}}
           onItemsChange={setLiveItems}
         />
       </div>
 
       <div className="border-t border-border pt-8">
         <NotesManager resourceId={resource.id} initialNotes={notes} />
+      </div>
+
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+        <h2 className="text-sm font-medium text-destructive">
+          {t("detail.dangerZone")}
+        </h2>
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            {t("detail.deleteHint")}
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+            {deleting ? t("common.saving") : t("detail.deleteResource")}
+          </Button>
+        </div>
+        {deleteError && (
+          <p className="mt-2 text-xs text-destructive" role="alert">
+            {deleteError}
+          </p>
+        )}
       </div>
     </section>
   );
