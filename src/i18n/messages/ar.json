@@ -62,7 +62,8 @@
     "moveUp": "تحريك لأعلى",
     "moveDown": "تحريك لأسفل",
     "resourceCount": "{n} مصدر",
-    "resourceCountPlural": "{n} مصادر"
+    "resourceCountPlural": "{n} مصادر",
+    "saveError": "تعذّر الحفظ. حاول مجدداً."
   },
   "common": {
     "all": "الكل",

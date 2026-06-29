@@ -62,7 +62,8 @@
     "moveUp": "Move up",
     "moveDown": "Move down",
     "resourceCount": "{n} resource",
-    "resourceCountPlural": "{n} resources"
+    "resourceCountPlural": "{n} resources",
+    "saveError": "Could not save. Please try again."
   },
   "common": {
     "all": "All",

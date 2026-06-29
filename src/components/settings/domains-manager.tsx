@@ -22,24 +22,19 @@ export function DomainsManager({
   );
   const [adding, setAdding] = React.useState(false);
   const [showArchived, setShowArchived] = React.useState(false);
+  const [opError, setOpError] = React.useState<string | null>(null);
 
-  const [fetchError, setFetchError] = React.useState<string | null>(null);
-
-  // Server-side fetch may return empty if the auth session isn't available
-  // during SSR. Re-fetch on mount using the browser session which is always live.
+  // Re-fetch client-side on mount — SSR auth may not resolve in time for RLS.
   React.useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user }, error: authErr }) => {
-      console.log("[DomainsManager] auth.getUser →", user?.id ?? null, authErr);
-    });
     supabase
       .from("learning_domains")
       .select("*")
       .order("sort_order")
       .then(({ data, error }) => {
-        console.log("[DomainsManager] fetch →", { data, error });
         if (error) {
-          setFetchError(`DB error: ${error.message} (${error.code})`);
+          console.error("[DomainsManager] fetch:", error);
+          setOpError(t("domains.saveError"));
           return;
         }
         if (data) {
@@ -67,9 +62,9 @@ export function DomainsManager({
   async function createDomain(fields: { name: string; color: string; icon: string }) {
     const supabase = createClient();
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
-    console.log("[DomainsManager] createDomain auth →", user?.id ?? null, authErr);
     if (!user) {
-      setFetchError(`Not authenticated: ${authErr?.message ?? "no user"}`);
+      console.error("[DomainsManager] not authenticated:", authErr);
+      setOpError(t("domains.saveError"));
       return false;
     }
 
@@ -86,12 +81,12 @@ export function DomainsManager({
       .select("*")
       .single();
 
-    console.log("[DomainsManager] insert →", { data, error });
     if (error || !data) {
-      setFetchError(`Insert failed: ${error?.message ?? "no data"} (${error?.code ?? ""})`);
+      console.error("[DomainsManager] insert:", error);
+      setOpError(t("domains.saveError"));
       return false;
     }
-    setFetchError(null);
+    setOpError(null);
     upsert(data as LearningDomain);
     return true;
   }
@@ -113,7 +108,12 @@ export function DomainsManager({
       .select("*")
       .single();
 
-    if (error || !data) return false;
+    if (error || !data) {
+      console.error("[DomainsManager] update:", error);
+      setOpError(t("domains.saveError"));
+      return false;
+    }
+    setOpError(null);
     upsert(data as LearningDomain);
     return true;
   }
@@ -126,7 +126,13 @@ export function DomainsManager({
       .eq("id", id)
       .select("*")
       .single();
-    if (!error && data) upsert(data as LearningDomain);
+    if (error) {
+      console.error("[DomainsManager] archive:", error);
+      setOpError(t("domains.saveError"));
+    } else {
+      setOpError(null);
+      if (data) upsert(data as LearningDomain);
+    }
   }
 
   async function deleteDomain(id: string) {
@@ -147,7 +153,12 @@ export function DomainsManager({
       .delete()
       .eq("id", id);
 
-    if (!error) removeLocal(id);
+    if (error) {
+      console.error("[DomainsManager] delete:", error);
+      return t("domains.saveError");
+    }
+    setOpError(null);
+    removeLocal(id);
     return null;
   }
 
@@ -175,17 +186,21 @@ export function DomainsManager({
         .single(),
     ]);
 
-    if (r1.data && r2.data) {
-      setDomains((prev) =>
-        prev
-          .map((d) => {
-            if (d.id === a.id) return r1.data as LearningDomain;
-            if (d.id === b.id) return r2.data as LearningDomain;
-            return d;
-          })
-          .sort((x, y) => x.sort_order - y.sort_order),
-      );
+    if (!r1.data || !r2.data) {
+      console.error("[DomainsManager] move:", r1.error ?? r2.error);
+      setOpError(t("domains.saveError"));
+      return;
     }
+    setOpError(null);
+    setDomains((prev) =>
+      prev
+        .map((d) => {
+          if (d.id === a.id) return r1.data as LearningDomain;
+          if (d.id === b.id) return r2.data as LearningDomain;
+          return d;
+        })
+        .sort((x, y) => x.sort_order - y.sort_order),
+    );
   }
 
   // ── derived lists ─────────────────────────────────────────────────────────
@@ -197,9 +212,17 @@ export function DomainsManager({
 
   return (
     <div className="space-y-6">
-      {fetchError && (
-        <div className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          <strong>Debug error:</strong> {fetchError}
+      {opError && (
+        <div className="flex items-center justify-between gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <span>{opError}</span>
+          <button
+            type="button"
+            onClick={() => setOpError(null)}
+            className="shrink-0 opacity-60 hover:opacity-100"
+            aria-label={t("common.cancel")}
+          >
+            ×
+          </button>
         </div>
       )}
       {/* Add form */}

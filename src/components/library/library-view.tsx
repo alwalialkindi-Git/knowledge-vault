@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { BookOpen, Plus, Search, SearchX, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 import { useTranslation } from "@/components/providers/language-provider";
 import { ResourceCard } from "@/components/library/resource-card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -25,14 +26,27 @@ export function LibraryView({
   domains: LearningDomain[];
 }) {
   const { t } = useTranslation();
+  const [liveDomains, setLiveDomains] = React.useState<LearningDomain[]>(domains);
   const [q, setQ] = React.useState("");
   const [domainFilter, setDomainFilter] = React.useState("");
+
+  React.useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("learning_domains")
+      .select("*")
+      .eq("is_archived", false)
+      .order("sort_order")
+      .then(({ data }) => {
+        if (data && data.length > 0) setLiveDomains(data as LearningDomain[]);
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [type, setType] = React.useState("");
   const [status, setStatus] = React.useState("");
 
   const domainById = React.useMemo(
-    () => new Map(domains.map((d) => [d.id, d])),
-    [domains],
+    () => new Map(liveDomains.map((d) => [d.id, d])),
+    [liveDomains],
   );
 
   const hasFilters = q !== "" || domainFilter !== "" || type !== "" || status !== "";
@@ -93,7 +107,7 @@ export function LibraryView({
             />
           </div>
 
-          {domains.length > 0 && (
+          {liveDomains.length > 0 && (
             <select
               aria-label={t("library.filterDomain")}
               value={domainFilter}
@@ -101,7 +115,7 @@ export function LibraryView({
               className={selectClass}
             >
               <option value="">{t("library.filterDomain")}</option>
-              {domains.map((d) => (
+              {liveDomains.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.icon ? `${d.icon} ${d.name}` : d.name}
                 </option>

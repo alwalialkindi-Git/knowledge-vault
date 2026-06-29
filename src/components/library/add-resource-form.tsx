@@ -55,7 +55,7 @@ export function AddResourceForm({ domains: initialDomains }: { domains: Learning
       .eq("is_archived", false)
       .order("sort_order")
       .then(({ data, error: err }) => {
-        console.log("[AddResourceForm] domains fetch →", { data, error: err });
+        if (err) console.error("[AddResourceForm] domains fetch:", err);
         if (data && data.length > 0) setDomains(data as LearningDomain[]);
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
