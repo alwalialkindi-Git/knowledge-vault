@@ -23,6 +23,22 @@ export function DomainsManager({
   const [adding, setAdding] = React.useState(false);
   const [showArchived, setShowArchived] = React.useState(false);
 
+  // Server-side fetch may return empty if the auth session isn't available
+  // during SSR. Re-fetch on mount using the browser session which is always live.
+  React.useEffect(() => {
+    if (initialDomains.length > 0) return;
+    const supabase = createClient();
+    supabase
+      .from("learning_domains")
+      .select("*")
+      .order("sort_order")
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setDomains([...(data as LearningDomain[])].sort((a, b) => a.sort_order - b.sort_order));
+        }
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── helpers ──────────────────────────────────────────────────────────────
 
   const upsert = (domain: LearningDomain) =>
