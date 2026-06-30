@@ -182,7 +182,8 @@ model Concept {
   updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
   links        ConceptLink[]
 
-  @@unique([userId, name])
+  // Uniqueness is enforced case-insensitively via a DB functional index:
+  // see supabase/migrations/004_concepts_case_insensitive.sql
   @@index([userId])
   @@map("concepts")
 }

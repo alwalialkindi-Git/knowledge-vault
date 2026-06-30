@@ -84,6 +84,23 @@
   font-style: italic;
 }
 
+/* [[WikiLink]] rendered anchors */
+.wikilink {
+  color: hsl(var(--primary));
+  text-decoration-line: underline;
+  text-decoration-color: hsl(var(--primary) / 0.4);
+  text-underline-offset: 2px;
+}
+.wikilink:hover {
+  text-decoration-color: hsl(var(--primary));
+}
+.wikilink--unknown {
+  color: hsl(var(--muted-foreground));
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  cursor: default;
+}
+
 /* ---- Phase 5 polish ---- */
 @layer base {
   ::selection {

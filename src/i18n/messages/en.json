@@ -306,7 +306,8 @@
     "noLinkedItems": "No linked items.",
     "dangerZone": "Danger zone",
     "deleteConcept": "Delete concept",
-    "deleteHint": "Permanently removes this concept and all its links. Resources and notes are not deleted."
+    "deleteHint": "Permanently removes this concept and all its links. Resources and notes are not deleted.",
+    "linkedConcepts": "Linked concepts"
   },
   "errors": {
     "title": "Something went wrong",

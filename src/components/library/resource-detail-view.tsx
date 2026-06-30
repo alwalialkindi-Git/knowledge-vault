@@ -27,6 +27,7 @@ import {
   type Resource,
   type ResourceItem,
 } from "@/lib/types";
+import type { NoteConceptLink } from "@/lib/wikilinks";
 
 export function ResourceDetailView({
   resource,
@@ -35,6 +36,8 @@ export function ResourceDetailView({
   pdfDownloadUrl,
   notes,
   items,
+  concepts: initialConcepts,
+  noteConceptLinks: initialNoteConceptLinks,
 }: {
   resource: Resource | null;
   domain: LearningDomain | null;
@@ -42,6 +45,8 @@ export function ResourceDetailView({
   pdfDownloadUrl: string | null;
   notes: Note[];
   items: ResourceItem[];
+  concepts: { id: string; name: string }[];
+  noteConceptLinks: NoteConceptLink[];
 }) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -51,6 +56,16 @@ export function ResourceDetailView({
   );
   const itemsDone = liveItems.filter((i) => i.is_completed).length;
   const itemsTotal = liveItems.length;
+
+  const [concepts, setConcepts] = React.useState(initialConcepts);
+
+  function handleConceptsUpdated(newConcepts: { id: string; name: string }[]) {
+    setConcepts((prev) => {
+      const existingIds = new Set(prev.map((c) => c.id));
+      const toAdd = newConcepts.filter((c) => !existingIds.has(c.id));
+      return toAdd.length > 0 ? [...prev, ...toAdd] : prev;
+    });
+  }
 
   const [deleting, setDeleting] = React.useState(false);
   const [deleteError, setDeleteError] = React.useState<string | null>(null);
@@ -287,12 +302,20 @@ export function ResourceDetailView({
         <ItemsManager
           resourceId={resource.id}
           initialItems={items}
+          concepts={concepts}
           onItemsChange={setLiveItems}
+          onConceptsUpdated={handleConceptsUpdated}
         />
       </div>
 
       <div className="border-t border-border pt-8">
-        <NotesManager resourceId={resource.id} initialNotes={notes} />
+        <NotesManager
+          resourceId={resource.id}
+          initialNotes={notes}
+          concepts={concepts}
+          initialNoteConceptLinks={initialNoteConceptLinks}
+          onConceptsUpdated={handleConceptsUpdated}
+        />
       </div>
 
       <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">

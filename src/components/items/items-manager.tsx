@@ -21,19 +21,24 @@ import { useTranslation } from "@/components/providers/language-provider";
 import { BulkItemEditor, ItemEditor } from "@/components/items/item-editor";
 import { YouTubeImporter, type YouTubeVideo } from "@/components/items/youtube-importer";
 import type { ResourceItem } from "@/lib/types";
+import { syncWikilinks } from "@/lib/wikilinks";
 
 type AddMode = "single" | "bulk" | "youtube" | null;
 
 export function ItemsManager({
   resourceId,
   initialItems,
+  concepts,
   onItemChange,
   onItemsChange,
+  onConceptsUpdated,
 }: {
   resourceId: string;
   initialItems: ResourceItem[];
+  concepts: { id: string; name: string }[];
   onItemChange?: (done: number, total: number) => void;
   onItemsChange?: (items: ResourceItem[]) => void;
+  onConceptsUpdated?: (newConcepts: { id: string; name: string }[]) => void;
 }) {
   const { t } = useTranslation();
   const [items, setItems] = React.useState<ResourceItem[]>(
@@ -94,6 +99,21 @@ export function ItemsManager({
       .single();
     if (error || !data) return false;
     upsert(data as ResourceItem);
+
+    const itemContent = [fields.title, fields.description].filter(Boolean).join(" ");
+    const knownIds = new Set(concepts.map((c) => c.id));
+    const synced = await syncWikilinks({
+      supabase,
+      userId: user.id,
+      entityType: "resource_item",
+      entityId: (data as ResourceItem).id,
+      content: itemContent,
+    });
+    const newOnes = synced
+      .filter((s) => !knownIds.has(s.conceptId))
+      .map((s) => ({ id: s.conceptId, name: s.conceptName }));
+    if (newOnes.length > 0) onConceptsUpdated?.(newOnes);
+
     return true;
   }
 
@@ -181,6 +201,9 @@ export function ItemsManager({
     },
   ) {
     const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     const { data, error } = await supabase
       .from("resource_items")
       .update({
@@ -196,6 +219,23 @@ export function ItemsManager({
 
     if (error || !data) return false;
     upsert(data as ResourceItem);
+
+    if (user) {
+      const itemContent = [fields.title, fields.description].filter(Boolean).join(" ");
+      const knownIds = new Set(concepts.map((c) => c.id));
+      const synced = await syncWikilinks({
+        supabase,
+        userId: user.id,
+        entityType: "resource_item",
+        entityId: id,
+        content: itemContent,
+      });
+      const newOnes = synced
+        .filter((s) => !knownIds.has(s.conceptId))
+        .map((s) => ({ id: s.conceptId, name: s.conceptName }));
+      if (newOnes.length > 0) onConceptsUpdated?.(newOnes);
+    }
+
     return true;
   }
 

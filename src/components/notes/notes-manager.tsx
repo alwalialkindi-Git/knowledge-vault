@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
   CheckCircle2,
   Circle,
@@ -17,6 +18,7 @@ import { useTranslation } from "@/components/providers/language-provider";
 import { NoteContent } from "@/components/notes/note-content";
 import { NoteEditor } from "@/components/notes/note-editor";
 import { NOTE_TYPES, type Note, type NoteType } from "@/lib/types";
+import { syncWikilinks, type WikilinkSync, type NoteConceptLink } from "@/lib/wikilinks";
 
 const SECTION_TITLE: Record<NoteType, string> = {
   note: "notes.sectionNote",
@@ -35,14 +37,48 @@ function todayISODate() {
   return new Date().toISOString().slice(0, 10);
 }
 
+type ConceptEntry = { id: string; name: string };
+
 export function NotesManager({
   resourceId,
   initialNotes,
+  concepts,
+  initialNoteConceptLinks,
+  onConceptsUpdated,
 }: {
   resourceId: string;
   initialNotes: Note[];
+  concepts: ConceptEntry[];
+  initialNoteConceptLinks: NoteConceptLink[];
+  onConceptsUpdated?: (newConcepts: ConceptEntry[]) => void;
 }) {
   const [notes, setNotes] = React.useState<Note[]>(initialNotes);
+
+  const [noteConceptLinks, setNoteConceptLinks] = React.useState<
+    Map<string, WikilinkSync[]>
+  >(() => {
+    const m = new Map<string, WikilinkSync[]>();
+    for (const link of initialNoteConceptLinks) {
+      const prev = m.get(link.noteId) ?? [];
+      prev.push({
+        linkId: link.linkId,
+        conceptId: link.conceptId,
+        conceptName: link.conceptName,
+      });
+      m.set(link.noteId, prev);
+    }
+    return m;
+  });
+
+  const conceptMap = React.useMemo<
+    ReadonlyMap<string, { id: string; name: string }>
+  >(() => {
+    const m = new Map<string, { id: string; name: string }>();
+    for (const c of concepts) {
+      m.set(c.name.toLowerCase(), c);
+    }
+    return m;
+  }, [concepts]);
 
   const upsert = (n: Note) =>
     setNotes((prev) => {
@@ -76,11 +112,31 @@ export function NotesManager({
 
     if (error || !data) return false;
     upsert(data as Note);
+
+    const knownIds = new Set(concepts.map((c) => c.id));
+    const synced = await syncWikilinks({
+      supabase,
+      userId: user.id,
+      entityType: "note",
+      entityId: (data as Note).id,
+      content,
+    });
+    setNoteConceptLinks((prev) => new Map(prev).set((data as Note).id, synced));
+    const newOnes = synced
+      .filter((s) => !knownIds.has(s.conceptId))
+      .map((s) => ({ id: s.conceptId, name: s.conceptName }));
+    if (newOnes.length > 0) onConceptsUpdated?.(newOnes);
+
     return true;
   }
 
   async function updateNote(id: string, content: string, location: string) {
     const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return false;
+
     const { data, error } = await supabase
       .from("notes")
       .update({ content, location: location || null })
@@ -89,13 +145,35 @@ export function NotesManager({
       .single();
     if (error || !data) return false;
     upsert(data as Note);
+
+    const knownIds = new Set(concepts.map((c) => c.id));
+    const synced = await syncWikilinks({
+      supabase,
+      userId: user.id,
+      entityType: "note",
+      entityId: id,
+      content,
+    });
+    setNoteConceptLinks((prev) => new Map(prev).set(id, synced));
+    const newOnes = synced
+      .filter((s) => !knownIds.has(s.conceptId))
+      .map((s) => ({ id: s.conceptId, name: s.conceptName }));
+    if (newOnes.length > 0) onConceptsUpdated?.(newOnes);
+
     return true;
   }
 
   async function deleteNote(id: string) {
     const supabase = createClient();
     const { error } = await supabase.from("notes").delete().eq("id", id);
-    if (!error) removeLocal(id); // review_cards row cascades automatically
+    if (!error) {
+      removeLocal(id);
+      setNoteConceptLinks((prev) => {
+        const next = new Map(prev);
+        next.delete(id);
+        return next;
+      });
+    }
   }
 
   async function toggleReview(note: Note) {
@@ -159,6 +237,8 @@ export function NotesManager({
           notes={notes
             .filter((n) => n.type === type)
             .sort((a, b) => a.created_at.localeCompare(b.created_at))}
+          conceptMap={conceptMap}
+          noteConceptLinks={noteConceptLinks}
           onAdd={addNote}
           onUpdate={updateNote}
           onDelete={deleteNote}
@@ -173,6 +253,8 @@ export function NotesManager({
 function Section({
   type,
   notes,
+  conceptMap,
+  noteConceptLinks,
   onAdd,
   onUpdate,
   onDelete,
@@ -181,6 +263,8 @@ function Section({
 }: {
   type: NoteType;
   notes: Note[];
+  conceptMap: ReadonlyMap<string, { id: string; name: string }>;
+  noteConceptLinks: Map<string, WikilinkSync[]>;
   onAdd: (type: NoteType, content: string, location: string) => Promise<boolean>;
   onUpdate: (id: string, content: string, location: string) => Promise<boolean>;
   onDelete: (id: string) => void;
@@ -231,6 +315,8 @@ function Section({
             <NoteItem
               key={note.id}
               note={note}
+              conceptMap={conceptMap}
+              conceptLinks={noteConceptLinks.get(note.id) ?? []}
               onUpdate={onUpdate}
               onDelete={onDelete}
               onToggleReview={onToggleReview}
@@ -245,12 +331,16 @@ function Section({
 
 function NoteItem({
   note,
+  conceptMap,
+  conceptLinks,
   onUpdate,
   onDelete,
   onToggleReview,
   onToggleDone,
 }: {
   note: Note;
+  conceptMap: ReadonlyMap<string, { id: string; name: string }>;
+  conceptLinks: WikilinkSync[];
   onUpdate: (id: string, content: string, location: string) => Promise<boolean>;
   onDelete: (id: string) => void;
   onToggleReview: (note: Note) => void;
@@ -296,7 +386,7 @@ function NoteItem({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <NoteContent content={note.content} />
+          <NoteContent content={note.content} conceptMap={conceptMap} />
 
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             {note.location && (
@@ -330,6 +420,20 @@ function NoteItem({
               </>
             )}
           </div>
+
+          {conceptLinks.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {conceptLinks.map((link) => (
+                <Link
+                  key={link.linkId}
+                  href={`/concepts/${link.conceptId}`}
+                  className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary hover:bg-primary/20"
+                >
+                  {link.conceptName}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex shrink-0 items-center gap-1">

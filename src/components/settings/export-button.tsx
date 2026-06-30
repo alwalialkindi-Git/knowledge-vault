@@ -27,7 +27,7 @@ export function ExportButton() {
 
       const payload = {
         app: "My Learning Vault",
-        version: 3,
+        version: 4,
         exported_at: new Date().toISOString(),
         learning_domains: domains.data ?? [],
         resources: resources.data ?? [],
