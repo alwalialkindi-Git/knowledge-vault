@@ -118,6 +118,25 @@ export interface ResourceItem {
   updated_at: string;
 }
 
+export interface Concept {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConceptLink {
+  id: string;
+  user_id: string;
+  concept_id: string;
+  note_id: string | null;
+  resource_id: string | null;
+  resource_item_id: string | null;
+  created_at: string;
+}
+
 export interface DueCard {
   id: string;
   interval_days: number;

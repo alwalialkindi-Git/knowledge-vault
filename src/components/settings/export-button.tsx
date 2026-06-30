@@ -14,23 +14,28 @@ export function ExportButton() {
     setBusy(true);
     try {
       const supabase = createClient();
-      const [domains, resources, resourceItems, notes, reviewCards] = await Promise.all([
-        supabase.from("learning_domains").select("*").order("sort_order"),
-        supabase.from("resources").select("*").order("created_at"),
-        supabase.from("resource_items").select("*").order("order_index"),
-        supabase.from("notes").select("*").order("created_at"),
-        supabase.from("review_cards").select("*").order("created_at"),
-      ]);
+      const [domains, resources, resourceItems, notes, reviewCards, concepts, conceptLinks] =
+        await Promise.all([
+          supabase.from("learning_domains").select("*").order("sort_order"),
+          supabase.from("resources").select("*").order("created_at"),
+          supabase.from("resource_items").select("*").order("order_index"),
+          supabase.from("notes").select("*").order("created_at"),
+          supabase.from("review_cards").select("*").order("created_at"),
+          supabase.from("concepts").select("*").order("created_at"),
+          supabase.from("concept_links").select("*").order("created_at"),
+        ]);
 
       const payload = {
         app: "My Learning Vault",
-        version: 2,
+        version: 3,
         exported_at: new Date().toISOString(),
         learning_domains: domains.data ?? [],
         resources: resources.data ?? [],
         resource_items: resourceItems.data ?? [],
         notes: notes.data ?? [],
         review_cards: reviewCards.data ?? [],
+        concepts: concepts.data ?? [],
+        concept_links: conceptLinks.data ?? [],
       };
 
       const blob = new Blob([JSON.stringify(payload, null, 2)], {

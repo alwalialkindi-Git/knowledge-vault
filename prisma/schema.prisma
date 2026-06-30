@@ -117,6 +117,7 @@ model Resource {
   updatedAt         DateTime        @default(now()) @updatedAt @map("updated_at")
   notes             Note[]
   items             ResourceItem[]
+  conceptLinks      ConceptLink[]
 
   @@index([userId])
   @@index([learningDomainId])
@@ -139,6 +140,8 @@ model ResourceItem {
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at")
 
+  conceptLinks     ConceptLink[]
+
   @@index([userId])
   @@index([resourceId])
   @@index([resourceId, orderIndex])
@@ -160,10 +163,48 @@ model Note {
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at")
   reviewCard   ReviewCard?
+  conceptLinks ConceptLink[]
 
   @@index([userId])
   @@index([resourceId])
   @@map("notes")
+}
+
+// Knowledge graph node belonging to a single user.
+// Never nested inside a domain, resource, or any other entity.
+// Created by supabase/migrations/003_concepts.sql
+model Concept {
+  id           String        @id @default(uuid()) @db.Uuid
+  userId       String        @map("user_id") @db.Uuid
+  name         String
+  description  String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
+  links        ConceptLink[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("concepts")
+}
+
+// Polymorphic link: exactly one of noteId / resourceId / resourceItemId is non-null.
+// The DB CHECK constraint enforces this; CASCADE deletes keep rows clean.
+model ConceptLink {
+  id             String       @id @default(uuid()) @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  conceptId      String       @map("concept_id") @db.Uuid
+  concept        Concept      @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  noteId         String?      @unique @map("note_id") @db.Uuid
+  note           Note?        @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  resourceId     String?      @unique @map("resource_id") @db.Uuid
+  resource       Resource?    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  resourceItemId String?      @unique @map("resource_item_id") @db.Uuid
+  resourceItem   ResourceItem? @relation(fields: [resourceItemId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@index([conceptId])
+  @@index([userId])
+  @@map("concept_links")
 }
 
 model ReviewCard {
