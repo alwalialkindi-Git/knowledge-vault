@@ -47,8 +47,14 @@ export default async function ConceptDetailPage({
 }) {
   const supabase = createClient();
 
-  const [conceptRes, resourceLinksRes, noteLinksRes, itemLinksRes, allResourcesRes] =
-    await Promise.all([
+  const [
+    conceptRes,
+    resourceLinksRes,
+    noteLinksRes,
+    itemLinksRes,
+    allResourcesRes,
+    allConceptsRes,
+  ] = await Promise.all([
       supabase
         .from("concepts")
         .select("*")
@@ -81,6 +87,11 @@ export default async function ConceptDetailPage({
         .from("resources")
         .select("id, title, type, status, priority")
         .order("title"),
+
+      supabase
+        .from("concepts")
+        .select("id, name")
+        .order("name"),
     ]);
 
   return (
@@ -93,6 +104,9 @@ export default async function ConceptDetailPage({
       itemLinks={((itemLinksRes.data ?? []) as unknown) as ItemLinkRow[]}
       allResources={
         (allResourcesRes.data as Pick<Resource, "id" | "title" | "type">[]) ?? []
+      }
+      concepts={
+        (allConceptsRes.data as { id: string; name: string }[]) ?? []
       }
     />
   );

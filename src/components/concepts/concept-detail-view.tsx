@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslation } from "@/components/providers/language-provider";
+import { NoteContent } from "@/components/notes/note-content";
 import type { Concept, Resource } from "@/lib/types";
 import type {
   ResourceLinkRow,
@@ -42,12 +43,6 @@ const NOTE_SECTION_KEY: Record<string, string> = {
   action_item: "notes.sectionAction",
 };
 
-// ── helpers ───────────────────────────────────────────────────────────────────
-
-function truncate(s: string, max = 120) {
-  return s.length > max ? s.slice(0, max).trimEnd() + "…" : s;
-}
-
 // ── main component ────────────────────────────────────────────────────────────
 
 export function ConceptDetailView({
@@ -56,12 +51,14 @@ export function ConceptDetailView({
   noteLinks,
   itemLinks,
   allResources,
+  concepts,
 }: {
   concept: Concept | null;
   resourceLinks: ResourceLinkRow[];
   noteLinks: NoteLinkRow[];
   itemLinks: ItemLinkRow[];
   allResources: Pick<Resource, "id" | "title" | "type">[];
+  concepts: { id: string; name: string }[];
 }) {
   const { t, locale } = useTranslation();
   const router = useRouter();
@@ -98,6 +95,7 @@ export function ConceptDetailView({
       noteLinks={noteLinks}
       itemLinks={itemLinks}
       allResources={allResources}
+      concepts={concepts}
       t={t}
       locale={locale}
       router={router}
@@ -113,6 +111,7 @@ function ConceptDetail({
   noteLinks,
   itemLinks,
   allResources,
+  concepts,
   t,
   locale,
   router,
@@ -122,10 +121,16 @@ function ConceptDetail({
   noteLinks: NoteLinkRow[];
   itemLinks: ItemLinkRow[];
   allResources: Pick<Resource, "id" | "title" | "type">[];
+  concepts: { id: string; name: string }[];
   t: (key: string) => string;
   locale: string;
   router: ReturnType<typeof useRouter>;
 }) {
+  const conceptMap = React.useMemo<ReadonlyMap<string, { id: string; name: string }>>(() => {
+    const m = new Map<string, { id: string; name: string }>();
+    for (const c of concepts) m.set(c.name.toLowerCase(), c);
+    return m;
+  }, [concepts]);
   // ── concept meta state ────────────────────────────────────────────────────
   const [editing, setEditing] = React.useState(false);
   const [name, setName] = React.useState(initial.name);
@@ -441,9 +446,11 @@ function ConceptDetail({
                     </>
                   )}
                 </p>
-                <p dir="auto" className="line-clamp-3 text-muted-foreground">
-                  {truncate(nl.note.content)}
-                </p>
+                <NoteContent
+                  content={nl.note.content}
+                  conceptMap={conceptMap}
+                  className="line-clamp-3 text-muted-foreground"
+                />
               </li>
             ))}
           </ul>
